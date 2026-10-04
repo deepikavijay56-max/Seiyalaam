@@ -1,0 +1,408 @@
+[
+  {
+    "id": "proj-1",
+    "title": "Smart Plant Watering System",
+    "description": "An automated plant watering system that monitors soil moisture and waters plants when needed. Great for learning about sensors and automation.",
+    "category": "practical",
+    "difficulty": "medium",
+    "requirements": [
+      { "component": "Arduino Uno",       "qty": 1, "critical": true,  "substitutes": ["Arduino Nano"] },
+      { "component": "Relay Module",      "qty": 1, "critical": true,  "substitutes": [] },
+      { "component": "Jumper Wires (set)","qty": 1, "critical": false, "substitutes": [] },
+      { "component": "DC Motor (small)",  "qty": 1, "critical": false, "substitutes": ["DC Motor (large)"] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Set up Arduino",    "desc": "Connect the Arduino Uno to your computer via USB." },
+      { "step": 2, "title": "Wire moisture sensor","desc": "Connect the soil moisture sensor to analog pin A0." },
+      { "step": 3, "title": "Add relay and pump","desc": "Wire relay module to pin D7, connect small pump." },
+      { "step": 4, "title": "Upload code",       "desc": "Upload the watering sketch and test the threshold." },
+      { "step": 5, "title": "Install in pot",    "desc": "Place sensor in soil and secure the setup." }
+    ],
+    "safety_notes": "Relay switches mains if using a mains pump – use a 5V USB pump instead."
+  },
+  {
+    "id": "proj-2",
+    "title": "Obstacle Avoiding Robot",
+    "description": "Build a robot that navigates around obstacles using ultrasonic sensing and DC motors. A classic intro to robotics.",
+    "category": "educational",
+    "difficulty": "medium",
+    "requirements": [
+      { "component": "Arduino Uno",         "qty": 1, "critical": true,  "substitutes": ["Arduino Nano"] },
+      { "component": "DC Motor (small)",    "qty": 2, "critical": true,  "substitutes": ["Gear Motor"] },
+      { "component": "L298N Motor Driver",  "qty": 1, "critical": true,  "substitutes": ["L293D Motor Driver"] },
+      { "component": "Ultrasonic Sensor",   "qty": 1, "critical": true,  "substitutes": ["IR Sensor"] },
+      { "component": "Jumper Wires (set)",  "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Chassis assembly", "desc": "Mount two DC motors on the chassis." },
+      { "step": 2, "title": "Wire motor driver","desc": "Connect L298N driver to motors and Arduino." },
+      { "step": 3, "title": "Attach sensor",    "desc": "Mount ultrasonic sensor on front, wire to Arduino." },
+      { "step": 4, "title": "Program logic",    "desc": "Upload obstacle avoidance sketch." },
+      { "step": 5, "title": "Test and tune",    "desc": "Adjust thresholds and test on a flat surface." }
+    ],
+    "safety_notes": "Keep fingers clear of moving wheels during testing."
+  },
+  {
+    "id": "proj-3",
+    "title": "LED Mood Lamp",
+    "description": "Create a customizable ambient lamp with colour-changing LEDs. Perfect for creative spaces.",
+    "category": "creative",
+    "difficulty": "easy",
+    "requirements": [
+      { "component": "Arduino Uno",        "qty": 1, "critical": true,  "substitutes": ["Arduino Nano"] },
+      { "component": "LED Strip (WS2812)", "qty": 1, "critical": true,  "substitutes": ["LED Strip (Plain)"] },
+      { "component": "Jumper Wires (set)", "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Connect LED strip","desc": "Wire WS2812 data line to Arduino pin D6." },
+      { "step": 2, "title": "Power the strip", "desc": "Use external 5V 2A supply for the LEDs." },
+      { "step": 3, "title": "Upload code",     "desc": "Install FastLED library and upload colour-cycle sketch." },
+      { "step": 4, "title": "Diffuser",        "desc": "Place inside a frosted jar or PVC tube." }
+    ],
+    "safety_notes": "Do not run the full LED strip from the Arduino 5V pin."
+  },
+  {
+    "id": "proj-4",
+    "title": "Digital Weather Station",
+    "description": "Display real-time temperature and humidity on an LCD screen. Great for learning about environmental sensing.",
+    "category": "educational",
+    "difficulty": "easy",
+    "requirements": [
+      { "component": "Arduino Uno",        "qty": 1, "critical": true,  "substitutes": ["Arduino Nano"] },
+      { "component": "DHT11 Sensor",       "qty": 1, "critical": true,  "substitutes": ["DHT22 Sensor"] },
+      { "component": "LCD Display (16x2)", "qty": 1, "critical": true,  "substitutes": ["OLED Display"] },
+      { "component": "Jumper Wires (set)", "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Wire DHT sensor","desc": "Connect DHT11 data pin to Arduino D2." },
+      { "step": 2, "title": "Connect LCD",   "desc": "Wire 16x2 LCD via I2C backpack." },
+      { "step": 3, "title": "Upload code",   "desc": "Use DHT and LiquidCrystal_I2C libraries." },
+      { "step": 4, "title": "Box it up",     "desc": "Mount in a vented enclosure." }
+    ],
+    "safety_notes": null
+  },
+  {
+    "id": "proj-5",
+    "title": "Smart Night Light",
+    "description": "An automatic night light that turns on when it gets dark using a light sensor and LED.",
+    "category": "practical",
+    "difficulty": "easy",
+    "requirements": [
+      { "component": "Arduino Uno",        "qty": 1, "critical": true,  "substitutes": ["Arduino Nano"] },
+      { "component": "LDR Sensor",         "qty": 1, "critical": true,  "substitutes": [] },
+      { "component": "LED Strip (Plain)",  "qty": 1, "critical": false, "substitutes": ["LED Strip (WS2812)"] },
+      { "component": "Jumper Wires (set)", "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Wire LDR",   "desc": "Connect LDR in voltage divider to analog pin A0." },
+      { "step": 2, "title": "Connect LED","desc": "Wire LED with resistor to pin D9." },
+      { "step": 3, "title": "Upload code","desc": "Upload a threshold-based on/off sketch." },
+      { "step": 4, "title": "Test",       "desc": "Cover the LDR and confirm LED switches on." }
+    ],
+    "safety_notes": null
+  },
+  {
+    "id": "proj-6",
+    "title": "Motion-Activated Alarm",
+    "description": "A security alarm that triggers a buzzer when motion is detected. Learn about PIR sensors.",
+    "category": "practical",
+    "difficulty": "easy",
+    "requirements": [
+      { "component": "Arduino Uno",        "qty": 1, "critical": true,  "substitutes": ["Arduino Nano"] },
+      { "component": "PIR Sensor",         "qty": 1, "critical": true,  "substitutes": [] },
+      { "component": "Buzzer",             "qty": 1, "critical": true,  "substitutes": ["Speaker (small)"] },
+      { "component": "Jumper Wires (set)", "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Connect PIR", "desc": "Wire PIR output to Arduino digital pin D3." },
+      { "step": 2, "title": "Add buzzer",  "desc": "Connect buzzer to pin D8 via transistor." },
+      { "step": 3, "title": "Program",     "desc": "Upload motion-detection and alarm sketch." },
+      { "step": 4, "title": "Mount",       "desc": "Fix PIR at door height and test with movement." }
+    ],
+    "safety_notes": null
+  },
+  {
+    "id": "proj-7",
+    "title": "Bluetooth Speaker",
+    "description": "Salvage the speaker from an old device and build a portable Bluetooth audio receiver.",
+    "category": "creative",
+    "difficulty": "medium",
+    "requirements": [
+      { "component": "Speaker (small)",        "qty": 1, "critical": true,  "substitutes": [] },
+      { "component": "HC-05 Bluetooth",        "qty": 1, "critical": true,  "substitutes": [] },
+      { "component": "18650 Li-ion Battery",   "qty": 1, "critical": false, "substitutes": ["Phone Battery", "LiPo Battery"] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Extract speaker",     "desc": "Carefully desolder the speaker from old device." },
+      { "step": 2, "title": "Wire amplifier",       "desc": "Connect a PAM8403 amplifier to the speaker." },
+      { "step": 3, "title": "Add Bluetooth module", "desc": "Wire HC-05 to the amplifier input." },
+      { "step": 4, "title": "Power and test",       "desc": "Power with 5V supply and pair your phone." },
+      { "step": 5, "title": "Enclose",              "desc": "Mount in a wooden box or repurposed tin." }
+    ],
+    "safety_notes": "Check battery condition before use – do not use swollen or leaking batteries."
+  },
+  {
+    "id": "proj-8",
+    "title": "IR Remote Control Car",
+    "description": "Build a simple remote-controlled car using salvaged motors and an IR remote.",
+    "category": "educational",
+    "difficulty": "medium",
+    "requirements": [
+      { "component": "Arduino Uno",        "qty": 1, "critical": true,  "substitutes": ["Arduino Nano"] },
+      { "component": "DC Motor (small)",   "qty": 2, "critical": true,  "substitutes": ["Gear Motor"] },
+      { "component": "L293D Motor Driver", "qty": 1, "critical": true,  "substitutes": ["L298N Motor Driver"] },
+      { "component": "IR Sensor",          "qty": 1, "critical": true,  "substitutes": [] },
+      { "component": "Jumper Wires (set)", "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Build chassis",   "desc": "Attach motors to a cardboard or printed chassis." },
+      { "step": 2, "title": "Wire driver",      "desc": "Connect L293D driver between Arduino and motors." },
+      { "step": 3, "title": "Add IR receiver", "desc": "Wire IR sensor to Arduino D11." },
+      { "step": 4, "title": "Map remote",       "desc": "Upload IR decoding sketch and map buttons." },
+      { "step": 5, "title": "Test drive",       "desc": "Test in an open area and tune speed." }
+    ],
+    "safety_notes": null
+  },
+  {
+    "id": "proj-9",
+    "title": "Digital Dice",
+    "description": "An electronic dice using LEDs and a button. Great beginner project for random numbers and I/O.",
+    "category": "educational",
+    "difficulty": "easy",
+    "requirements": [
+      { "component": "Arduino Nano",       "qty": 1, "critical": true,  "substitutes": ["Arduino Uno"] },
+      { "component": "Jumper Wires (set)", "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Wire LEDs",   "desc": "Wire LEDs in dice pattern to Arduino pins." },
+      { "step": 2, "title": "Add button",  "desc": "Connect push button to pin D2 with pull-up." },
+      { "step": 3, "title": "Program",     "desc": "Upload random number generator with LED logic." },
+      { "step": 4, "title": "Box it",      "desc": "Mount in a small enclosure." }
+    ],
+    "safety_notes": null
+  },
+  {
+    "id": "proj-10",
+    "title": "Servo-Controlled Pan/Tilt Mount",
+    "description": "Build a motorized camera or sensor mount that pans and tilts. Useful for security or photography.",
+    "category": "creative",
+    "difficulty": "medium",
+    "requirements": [
+      { "component": "Arduino Uno",        "qty": 1, "critical": true,  "substitutes": ["Arduino Nano"] },
+      { "component": "Servo Motor",        "qty": 2, "critical": true,  "substitutes": [] },
+      { "component": "Jumper Wires (set)", "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Print or cut bracket","desc": "Create bracket for two servos to hold camera." },
+      { "step": 2, "title": "Mount servos",         "desc": "Attach pan servo to base, tilt servo on arm." },
+      { "step": 3, "title": "Wire to Arduino",      "desc": "Connect servo signal wires to D9 and D10." },
+      { "step": 4, "title": "Control",              "desc": "Upload control sketch and test movement." }
+    ],
+    "safety_notes": null
+  },
+  {
+    "id": "proj-11",
+    "title": "OLED Clock",
+    "description": "A compact digital clock displayed on a salvaged OLED screen, powered by Arduino.",
+    "category": "educational",
+    "difficulty": "easy",
+    "requirements": [
+      { "component": "Arduino Nano",       "qty": 1, "critical": true,  "substitutes": ["Arduino Uno"] },
+      { "component": "OLED Display",       "qty": 1, "critical": true,  "substitutes": ["LCD Display (16x2)"] },
+      { "component": "Jumper Wires (set)", "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Wire OLED",  "desc": "Connect OLED via I2C (SDA to A4, SCL to A5)." },
+      { "step": 2, "title": "Add RTC",    "desc": "Wire DS3231 RTC on same I2C bus." },
+      { "step": 3, "title": "Upload code","desc": "Use U8g2 and RTClib libraries." },
+      { "step": 4, "title": "Set time",   "desc": "Set current time in setup() and upload." },
+      { "step": 5, "title": "Enclose",    "desc": "Fit in a small 3D-printed stand." }
+    ],
+    "safety_notes": null
+  },
+  {
+    "id": "proj-12",
+    "title": "Wireless Sensor Network Node",
+    "description": "Create a battery-powered sensor node that transmits temperature and humidity wirelessly.",
+    "category": "educational",
+    "difficulty": "hard",
+    "requirements": [
+      { "component": "Arduino Uno",        "qty": 2, "critical": true,  "substitutes": ["Arduino Nano"] },
+      { "component": "NRF24L01 Module",    "qty": 2, "critical": true,  "substitutes": [] },
+      { "component": "DHT22 Sensor",       "qty": 1, "critical": true,  "substitutes": ["DHT11 Sensor"] },
+      { "component": "LCD Display (16x2)", "qty": 1, "critical": false, "substitutes": ["OLED Display"] },
+      { "component": "Jumper Wires (set)", "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Transmitter node","desc": "Wire Arduino + DHT22 + NRF24L01 as sender." },
+      { "step": 2, "title": "Receiver node",   "desc": "Wire second Arduino + NRF24L01 + LCD as receiver." },
+      { "step": 3, "title": "Program both",    "desc": "Upload sender and receiver sketches." },
+      { "step": 4, "title": "Test range",      "desc": "Move nodes apart and verify data reception." },
+      { "step": 5, "title": "Power optimise",  "desc": "Add sleep mode for battery saving." }
+    ],
+    "safety_notes": "NRF24L01 requires 3.3V – do not connect to 5V."
+  },
+  {
+    "id": "proj-13",
+    "title": "Fan Speed Controller",
+    "description": "Add variable speed control to a salvaged DC fan using PWM from an Arduino.",
+    "category": "practical",
+    "difficulty": "easy",
+    "requirements": [
+      { "component": "Arduino Nano",       "qty": 1, "critical": true,  "substitutes": ["Arduino Uno"] },
+      { "component": "DC Motor (large)",   "qty": 1, "critical": true,  "substitutes": ["DC Motor (small)"] },
+      { "component": "Jumper Wires (set)", "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Check fan voltage", "desc": "Identify fan voltage (usually 5V or 12V)." },
+      { "step": 2, "title": "Wire transistor",   "desc": "Connect TIP120 transistor between Arduino and fan." },
+      { "step": 3, "title": "Add potentiometer", "desc": "Wire pot to analog pin A0 for speed control." },
+      { "step": 4, "title": "Upload PWM code",   "desc": "Upload analogWrite fan speed sketch." },
+      { "step": 5, "title": "Test safety",       "desc": "Confirm fan does not overheat at low speeds." }
+    ],
+    "safety_notes": "If the fan runs on mains voltage, do NOT connect to Arduino."
+  },
+  {
+    "id": "proj-14",
+    "title": "Stepper Motor Pen Plotter",
+    "description": "Build a simple 2-axis drawing machine using salvaged stepper motors from an old printer.",
+    "category": "creative",
+    "difficulty": "hard",
+    "requirements": [
+      { "component": "Arduino Uno",        "qty": 1, "critical": true,  "substitutes": [] },
+      { "component": "Stepper Motor",      "qty": 2, "critical": true,  "substitutes": [] },
+      { "component": "Servo Motor",        "qty": 1, "critical": true,  "substitutes": [] },
+      { "component": "Jumper Wires (set)", "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Extract steppers","desc": "Remove stepper motors from old printer." },
+      { "step": 2, "title": "Build frame",     "desc": "Construct XY gantry from cardboard or MDF." },
+      { "step": 3, "title": "Wire drivers",    "desc": "Connect stepper drivers to Arduino." },
+      { "step": 4, "title": "Add pen mount",   "desc": "Attach servo to lift pen." },
+      { "step": 5, "title": "Upload firmware", "desc": "Use GRBL or custom plotter firmware." },
+      { "step": 6, "title": "Calibrate",       "desc": "Draw test patterns and calibrate steps/mm." }
+    ],
+    "safety_notes": "Ensure moving parts cannot trap fingers during testing."
+  },
+  {
+    "id": "proj-15",
+    "title": "Bike Safety Light",
+    "description": "Build a bright rechargeable LED tail-light for cycling, powered by a salvaged phone battery.",
+    "category": "practical",
+    "difficulty": "easy",
+    "requirements": [
+      { "component": "Phone Battery",      "qty": 1, "critical": true,  "substitutes": ["18650 Li-ion Battery", "LiPo Battery"] },
+      { "component": "LED Strip (Plain)",  "qty": 1, "critical": true,  "substitutes": ["LED Strip (WS2812)"] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Select LEDs",    "desc": "Choose high-brightness red LEDs or LED strip section." },
+      { "step": 2, "title": "Add charger",    "desc": "Wire a TP4056 charger to the phone battery." },
+      { "step": 3, "title": "Add switch",     "desc": "Include on/off and blink mode switch." },
+      { "step": 4, "title": "Enclose",        "desc": "Mount in a weatherproof case." }
+    ],
+    "safety_notes": "Use only undamaged, non-swollen batteries. Include a fuse."
+  },
+  {
+    "id": "proj-16",
+    "title": "Clap-Activated Switch",
+    "description": "Control a light or fan with a clap using a sound sensor and relay.",
+    "category": "practical",
+    "difficulty": "easy",
+    "requirements": [
+      { "component": "Arduino Uno",        "qty": 1, "critical": true,  "substitutes": ["Arduino Nano"] },
+      { "component": "Relay Module",       "qty": 1, "critical": true,  "substitutes": [] },
+      { "component": "Buzzer",             "qty": 1, "critical": false, "substitutes": [] },
+      { "component": "Jumper Wires (set)", "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Wire sound sensor","desc": "Connect KY-038 mic to Arduino A0." },
+      { "step": 2, "title": "Add relay",         "desc": "Connect relay module to pin D7." },
+      { "step": 3, "title": "Program",           "desc": "Upload double-clap detection sketch." },
+      { "step": 4, "title": "Wire appliance",    "desc": "Connect a low-voltage LED lamp through relay." }
+    ],
+    "safety_notes": "Never connect mains voltage through the relay yourself."
+  },
+  {
+    "id": "proj-17",
+    "title": "Retro Game Console",
+    "description": "Transform a Raspberry Pi into a retro gaming console with a salvaged phone battery.",
+    "category": "creative",
+    "difficulty": "hard",
+    "requirements": [
+      { "component": "Raspberry Pi",        "qty": 1, "critical": true,  "substitutes": [] },
+      { "component": "Phone Battery",       "qty": 1, "critical": true,  "substitutes": ["LiPo Battery", "18650 Li-ion Battery"] },
+      { "component": "OLED Display",        "qty": 1, "critical": false, "substitutes": ["LCD Display (16x2)"] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Install RetroPie","desc": "Flash RetroPie image to microSD card." },
+      { "step": 2, "title": "Power bank circuit","desc": "Wire phone battery + TP4056 + boost converter." },
+      { "step": 3, "title": "Connect display",  "desc": "Wire small TFT or OLED display to Pi." },
+      { "step": 4, "title": "Add controls",     "desc": "Connect GPIO buttons or small gamepad." },
+      { "step": 5, "title": "Enclose",          "desc": "3D-print or carve a handheld case." }
+    ],
+    "safety_notes": "Battery + boost converter combination requires protection circuitry."
+  },
+  {
+    "id": "proj-18",
+    "title": "Soil Erosion Monitor",
+    "description": "A sensor array that monitors soil moisture at multiple depths to study erosion or guide irrigation.",
+    "category": "educational",
+    "difficulty": "hard",
+    "requirements": [
+      { "component": "Arduino Uno",        "qty": 1, "critical": true,  "substitutes": ["Raspberry Pi"] },
+      { "component": "DHT22 Sensor",       "qty": 1, "critical": false, "substitutes": ["DHT11 Sensor"] },
+      { "component": "LCD Display (16x2)", "qty": 1, "critical": false, "substitutes": ["OLED Display"] },
+      { "component": "Jumper Wires (set)", "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Array wiring",     "desc": "Connect three moisture sensors to A0, A1, A2." },
+      { "step": 2, "title": "Add display",      "desc": "Show readings on LCD or serial plotter." },
+      { "step": 3, "title": "Data logging",     "desc": "Log to SD card with timestamps." },
+      { "step": 4, "title": "Waterproof",       "desc": "Apply conformal coating to sensor traces." },
+      { "step": 5, "title": "Field install",    "desc": "Insert sensors at different soil depths." }
+    ],
+    "safety_notes": "Waterproof all exposed electronics in outdoor installations."
+  },
+  {
+    "id": "proj-19",
+    "title": "Talking Distance Meter",
+    "description": "An ultrasonic distance meter that announces measurements through a speaker. Good for accessibility.",
+    "category": "practical",
+    "difficulty": "medium",
+    "requirements": [
+      { "component": "Arduino Uno",        "qty": 1, "critical": true,  "substitutes": ["Arduino Nano"] },
+      { "component": "Ultrasonic Sensor",  "qty": 1, "critical": true,  "substitutes": [] },
+      { "component": "Speaker (small)",    "qty": 1, "critical": true,  "substitutes": ["Buzzer"] },
+      { "component": "Jumper Wires (set)", "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Wire ultrasonic","desc": "Connect HC-SR04 to D9 (trig) and D10 (echo)." },
+      { "step": 2, "title": "Add speaker",    "desc": "Wire speaker via small amplifier to Arduino." },
+      { "step": 3, "title": "Program TTS",    "desc": "Use a TTS chip or pre-recorded audio clips." },
+      { "step": 4, "title": "Enclose",        "desc": "Fit in a handheld enclosure." }
+    ],
+    "safety_notes": null
+  },
+  {
+    "id": "proj-20",
+    "title": "Electronic Compost Monitor",
+    "description": "Monitor temperature and moisture inside a compost bin to optimise decomposition rates.",
+    "category": "practical",
+    "difficulty": "medium",
+    "requirements": [
+      { "component": "Arduino Nano",           "qty": 1, "critical": true,  "substitutes": ["Arduino Uno"] },
+      { "component": "DHT22 Sensor",           "qty": 1, "critical": true,  "substitutes": ["DHT11 Sensor"] },
+      { "component": "OLED Display",           "qty": 1, "critical": false, "substitutes": ["LCD Display (16x2)"] },
+      { "component": "18650 Li-ion Battery",   "qty": 1, "critical": false, "substitutes": ["LiPo Battery"] },
+      { "component": "Jumper Wires (set)",     "qty": 1, "critical": false, "substitutes": [] }
+    ],
+    "steps": [
+      { "step": 1, "title": "Waterproof sensor","desc": "Coat DHT22 and probe in epoxy for moisture." },
+      { "step": 2, "title": "Wire Arduino",     "desc": "Connect sensors to Arduino analog and digital pins." },
+      { "step": 3, "title": "Add display",      "desc": "Show temp and moisture on OLED." },
+      { "step": 4, "title": "Power",            "desc": "Use solar panel + battery for outdoor power." },
+      { "step": 5, "title": "Mount",            "desc": "Insert probe in compost heap and fix display on lid." }
+    ],
+    "safety_notes": "Seal all electronics from moisture. Do not submerge the Arduino."
+  }
+]

@@ -1,0 +1,212 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────
+   Google Fonts
+   ───────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Noto+Sans+Tamil:wght@400;500;600&display=swap');
+
+/* ─────────────────────────────────────────────
+   Design Tokens
+   ───────────────────────────────────────────── */
+:root {
+  /* Primary Green scale */
+  --color-green-50:  #f0faf5;
+  --color-green-100: #d9f2e6;
+  --color-green-200: #b0e4cc;
+  --color-green-300: #7ecfab;
+  --color-green-400: #4db88a;
+  --color-green-500: #1B7F4B;
+  --color-green-600: #15663c;
+  --color-green-700: #10502f;
+  --color-green-800: #0c3b23;
+  --color-green-900: #072718;
+
+  /* Accent Amber */
+  --color-amber-400: #fbbb33;
+  --color-amber-500: #F5A524;
+  --color-amber-600: #d98c0c;
+
+  /* Teal info */
+  --color-teal-400: #2cc4d0;
+  --color-teal-500: #0E9AA7;
+  --color-teal-600: #0b7d88;
+
+  /* Danger Red */
+  --color-red-500: #D64545;
+  --color-red-600: #b83232;
+
+  /* Neutral slate */
+  --color-slate-50:  #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+
+  /* Surfaces – light mode */
+  --surface-bg:      #F7FAF8;
+  --surface-card:    #ffffff;
+  --surface-tint:    #e8f5ee;
+  --surface-border:  #d4e8db;
+
+  /* Text */
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #94a3b8;
+  --text-inverse:   #ffffff;
+
+  /* Device class colours */
+  --class-a: #1B7F4B;
+  --class-b: #0E9AA7;
+  --class-c: #F5A524;
+  --class-d: #64748b;
+  --class-e: #D64545;
+
+  /* Feasibility colours */
+  --feasibility-high:   #1B7F4B;
+  --feasibility-medium: #F5A524;
+  --feasibility-low:    #64748b;
+
+  /* Radius */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  --shadow-md: 0 4px 12px 0 rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+  --shadow-lg: 0 10px 25px -3px rgb(0 0 0 / 0.10), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+
+  /* Typography */
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+  --font-tamil:   'Noto Sans Tamil', system-ui, sans-serif;
+
+  /* Spacing base: 4px */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Max page width */
+  --max-width: 1200px;
+}
+
+/* Dark mode tokens */
+.dark {
+  --surface-bg:      #0E1A15;
+  --surface-card:    #16251E;
+  --surface-tint:    #1a2e22;
+  --surface-border:  #2a3d30;
+
+  --text-primary:   #f0faf5;
+  --text-secondary: #94a3b8;
+  --text-muted:     #475569;
+}
+
+/* ─────────────────────────────────────────────
+   Base Styles
+   ───────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--surface-bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Tamil text override */
+:lang(ta), .tamil {
+  font-family: var(--font-tamil);
+  line-height: 1.7;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+/* Tabular numbers for stats */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Focus rings */
+:focus-visible {
+  outline: 2px solid var(--color-green-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Page container */
+.page-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .page-container {
+    padding: 0 var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-container {
+    padding: 0 var(--space-8);
+  }
+}
+
+/* Circuit-trace + leaf decorative pattern */
+.circuit-bg {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%231B7F4B' stroke-opacity='0.05' stroke-width='1'%3E%3Cpath d='M0 30h15M30 0v15M60 30H45M30 60V45'/%3E%3Ccircle cx='30' cy='30' r='3'/%3E%3Ccircle cx='15' cy='30' r='2'/%3E%3Ccircle cx='45' cy='30' r='2'/%3E%3Ccircle cx='30' cy='15' r='2'/%3E%3Ccircle cx='30' cy='45' r='2'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-tint) 25%,
+    var(--surface-card) 50%,
+    var(--surface-tint) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -91,7 +91,7 @@ export default function InteractiveScrapCalculator() {
   return (
     <div
       style={{
-        padding: '32px 24px',
+        padding: '24px 16px',
         borderRadius: 'var(--radius-xl)',
         background: 'var(--surface-card)',
         border: '1px solid var(--surface-border)',
@@ -192,7 +192,7 @@ export default function InteractiveScrapCalculator() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
           gap: 16,
         }}
       >

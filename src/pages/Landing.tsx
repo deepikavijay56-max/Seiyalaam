@@ -158,14 +158,15 @@ export default function Landing() {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 28,
-                padding: '12px 24px',
-                borderRadius: 'var(--radius-full)',
-                background: 'rgba(255, 255, 255, 0.8)',
+                gap: '12px 24px',
+                padding: '12px 20px',
+                borderRadius: 'var(--radius-lg)',
+                background: 'rgba(255, 255, 255, 0.85)',
                 backdropFilter: 'blur(10px)',
                 border: '1px solid var(--surface-border)',
                 flexWrap: 'wrap',
                 justifyContent: 'center',
+                maxWidth: '100%',
               }}
             >
               {[
@@ -244,18 +245,11 @@ export default function Landing() {
           </div>
 
           {/* Bento Grid */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(12, 1fr)',
-              gap: 24,
-            }}
-          >
+          <div className="bento-grid">
             {/* Box 1: AI Vision Optical Scanner (Spans 7 cols) */}
             <div
               style={{
-                gridColumn: 'span 7',
-                padding: '32px',
+                padding: '24px 20px',
                 borderRadius: 'var(--radius-xl)',
                 background: 'var(--surface-bg)',
                 border: '1px solid var(--surface-border)',
@@ -263,7 +257,7 @@ export default function Landing() {
                 flexDirection: 'column',
                 justifyContent: 'space-between',
               }}
-              className="glow-card"
+              className="glow-card bento-col-7"
             >
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
@@ -301,8 +295,7 @@ export default function Landing() {
             {/* Box 2: "One-Away" Missing Link Engine (Spans 5 cols) */}
             <div
               style={{
-                gridColumn: 'span 5',
-                padding: '32px',
+                padding: '24px 20px',
                 borderRadius: 'var(--radius-xl)',
                 background: 'linear-gradient(135deg, var(--surface-tint) 0%, var(--surface-card) 100%)',
                 border: '1px solid var(--surface-border)',
@@ -310,7 +303,7 @@ export default function Landing() {
                 flexDirection: 'column',
                 justifyContent: 'space-between',
               }}
-              className="glow-card"
+              className="glow-card bento-col-5"
             >
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
@@ -380,13 +373,12 @@ export default function Landing() {
             {/* Box 3: Teardown Safety & Hazard Classification (Spans 6 cols) */}
             <div
               style={{
-                gridColumn: 'span 6',
-                padding: '32px',
+                padding: '24px 20px',
                 borderRadius: 'var(--radius-xl)',
                 background: 'var(--surface-card)',
                 border: '1px solid var(--surface-border)',
               }}
-              className="glow-card"
+              className="glow-card bento-col-6"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                 <div
@@ -408,7 +400,7 @@ export default function Landing() {
                 </span>
               </div>
 
-              <h3 style={{ fontSize: 20, fontWeight: 700, margin: '0 0 10px' }}>
+                <h3 style={{ fontSize: 20, fontWeight: 700, margin: '0 0 10px' }}>
                 Class A to E Teardown Risk Assessment
               </h3>
               <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 16 }}>
@@ -437,13 +429,12 @@ export default function Landing() {
             {/* Box 4: Open Maker Education (Spans 6 cols) */}
             <div
               style={{
-                gridColumn: 'span 6',
-                padding: '32px',
+                padding: '24px 20px',
                 borderRadius: 'var(--radius-xl)',
                 background: 'var(--surface-card)',
                 border: '1px solid var(--surface-border)',
               }}
-              className="glow-card"
+              className="glow-card bento-col-6"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                 <div

@@ -10,8 +10,17 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-// NOTE: Only the anon key is used here. The service_role key is NEVER in client code.
+export function isSupabaseConfigured(): boolean {
+  return Boolean(
+    supabaseUrl &&
+    supabaseAnonKey &&
+    supabaseUrl !== 'http://localhost:54321' &&
+    !supabaseUrl.includes('your-project-ref')
+  );
+}
+
+// NOTE: Only the public anon key is used here. The service_role key is NEVER in client code.
 export const supabase = createClient(
-  supabaseUrl ?? 'http://localhost:54321',
-  supabaseAnonKey ?? 'public-anon-key'
+  supabaseUrl || 'http://localhost:54321',
+  supabaseAnonKey || 'public-anon-key'
 );

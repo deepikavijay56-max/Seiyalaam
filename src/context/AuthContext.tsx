@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import type { Profile, AuthContextValue } from '../types';
 import { AuthContext } from './authContextDef';
 
@@ -119,6 +119,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
     setLoading(true);
     try {
+      if (!isSupabaseConfigured()) {
+        setError('Backend is not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your Vercel Project Settings and redeploy.');
+        return false;
+      }
+
       const sanitizedName = displayName.trim() || email.split('@')[0] || 'Maker';
       const cleanEmail = email.trim().toLowerCase();
 
@@ -179,7 +184,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else if (rawMsg.includes('rate limit') || rawMsg.includes('over_email_send_rate_limit')) {
         userFriendlyMsg = 'Email confirmation rate limit reached. Please disable "Confirm email" in Supabase Dashboard (Auth -> Providers -> Email) or wait a few minutes.';
       } else if (rawMsg.includes('Failed to fetch') || rawMsg.includes('NetworkError') || rawMsg.includes('fetch')) {
-        userFriendlyMsg = 'Network connection failed. Please check your internet connection.';
+        if (!isSupabaseConfigured()) {
+          userFriendlyMsg = 'Backend is not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Vercel settings and redeploy.';
+        } else {
+          userFriendlyMsg = 'Cannot reach backend server. Please check your internet connection or Supabase service status.';
+        }
       }
 
       setError(userFriendlyMsg);
@@ -193,6 +202,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
     setLoading(true);
     try {
+      if (!isSupabaseConfigured()) {
+        setError('Backend is not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your Vercel Project Settings and redeploy.');
+        return false;
+      }
+
       const cleanEmail = email.trim().toLowerCase();
       const { data, error: supaError } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
@@ -220,7 +234,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else if (rawMsg.includes('Email not confirmed')) {
         userFriendlyMsg = 'Account created. Please check your email to verify your account.';
       } else if (rawMsg.includes('Failed to fetch') || rawMsg.includes('NetworkError')) {
-        userFriendlyMsg = 'Network connection failed. Please check your internet connection.';
+        if (!isSupabaseConfigured()) {
+          userFriendlyMsg = 'Backend is not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Vercel settings and redeploy.';
+        } else {
+          userFriendlyMsg = 'Cannot reach backend server. Please check your internet connection or Supabase service status.';
+        }
       }
 
       setError(userFriendlyMsg);

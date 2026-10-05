@@ -19,7 +19,7 @@ export default function LiveImpactTicker() {
   return (
     <div
       style={{
-        padding: '24px',
+        padding: '20px 16px',
         borderRadius: 'var(--radius-lg)',
         background: 'var(--surface-card)',
         border: '1px solid var(--surface-border)',
@@ -50,8 +50,8 @@ export default function LiveImpactTicker() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: 16,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
+          gap: 14,
         }}
       >
         {/* Metric 1 */}

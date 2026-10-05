@@ -172,18 +172,99 @@ h1, h2, h3, h4, h5, h6 {
 .page-container {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 16px;
+  width: 100%;
 }
 
 @media (min-width: 640px) {
   .page-container {
-    padding: 0 32px;
+    padding: 0 24px;
   }
 }
 
 @media (min-width: 1024px) {
   .page-container {
     padding: 0 40px;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   Responsive Bento & Grid Utilities
+   ───────────────────────────────────────────── */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+
+.bento-col-7 { grid-column: span 7; }
+.bento-col-5 { grid-column: span 5; }
+.bento-col-6 { grid-column: span 6; }
+.bento-col-12 { grid-column: span 12; }
+
+@media (max-width: 900px) {
+  .bento-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .bento-col-7,
+  .bento-col-5,
+  .bento-col-6,
+  .bento-col-12 {
+    grid-column: span 1 !important;
+  }
+}
+
+/* Mobile-friendly horizontal scroll pill bar */
+.scroll-pill-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  max-width: 100%;
+}
+.scroll-pill-bar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Responsive Teardown Stage */
+.teardown-split-stage {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 820px) {
+  .teardown-split-stage {
+    grid-template-columns: 1.15fr 1fr;
+  }
+}
+
+/* Responsive Button Action Row */
+.action-btn-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+  width: 100%;
+}
+@media (min-width: 480px) {
+  .action-btn-row {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+/* Responsive 3-metric stats grid */
+.metric-3-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+@media (max-width: 440px) {
+  .metric-3-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
 

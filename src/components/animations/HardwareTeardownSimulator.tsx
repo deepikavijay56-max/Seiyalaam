@@ -207,7 +207,7 @@ export default function HardwareTeardownSimulator() {
         <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600, whiteSpace: 'nowrap' }}>
           Select E-Waste Scrap:
         </span>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="scroll-pill-bar">
           {SAMPLE_DEVICES.map((d, idx) => {
             const isSelected = idx === selectedIdx;
             return (
@@ -226,6 +226,7 @@ export default function HardwareTeardownSimulator() {
                   transition: 'all 0.2s ease',
                   whiteSpace: 'nowrap',
                   boxShadow: isSelected ? '0 4px 14px rgba(16,185,129,0.3)' : 'none',
+                  flexShrink: 0,
                 }}
               >
                 {d.name.split(' (')[0]}
@@ -236,18 +237,13 @@ export default function HardwareTeardownSimulator() {
       </div>
 
       {/* Main Interactive Split Stage */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))',
-          gap: 0,
-        }}
-      >
+      <div className="teardown-split-stage">
         {/* Left Side: Scrap Gadget Teardown & Salvaged Silicon */}
         <div
           style={{
-            padding: '28px 24px',
+            padding: '24px 18px',
             borderRight: '1px solid var(--surface-border)',
+            borderBottom: '1px solid var(--surface-border)',
             position: 'relative',
           }}
         >
@@ -378,7 +374,7 @@ export default function HardwareTeardownSimulator() {
         {/* Right Side: The Living Rebirth Project */}
         <div
           style={{
-            padding: '28px 24px',
+            padding: '24px 18px',
             background: 'linear-gradient(135deg, var(--surface-tint) 0%, var(--surface-card) 100%)',
             display: 'flex',
             flexDirection: 'column',
@@ -443,10 +439,10 @@ export default function HardwareTeardownSimulator() {
                 marginBottom: 20,
               }}
             >
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase' }}>
                 Eco-Impact & Cost Avoidance
               </div>
-              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+              <div className="metric-3-grid">
                 <div>
                   <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-green-600)', fontFamily: 'var(--font-display)' }}>
                     {device.weightKg} kg
@@ -469,7 +465,7 @@ export default function HardwareTeardownSimulator() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+          <div className="action-btn-row">
             <Link
               to="/projects"
               style={{
@@ -487,6 +483,7 @@ export default function HardwareTeardownSimulator() {
                 fontSize: 14,
                 boxShadow: '0 4px 14px rgba(16, 185, 129, 0.3)',
                 transition: 'all 0.2s ease',
+                textAlign: 'center',
               }}
             >
               Explore 20+ Maker Blueprints
@@ -507,6 +504,7 @@ export default function HardwareTeardownSimulator() {
                 textDecoration: 'none',
                 fontWeight: 600,
                 fontSize: 14,
+                textAlign: 'center',
               }}
             >
               Log Scrap Parts

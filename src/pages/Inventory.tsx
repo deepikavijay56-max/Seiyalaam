@@ -1,14 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { Plus, Trash2, Package, ToggleLeft, ToggleRight, Sparkles, Mic, Camera } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../hooks/useAuth';
+import { useLanguage } from '../hooks/useLanguage';
+import { useInventory } from '../hooks/useInventory';
 import { supabase } from '../lib/supabase';
 import componentsData from '../data/components.json';
 import SmartInputModal from '../components/SmartInputModal';
 import {
   type Condition,
   type InventoryItem,
-  getLocalInventory,
   saveLocalInventory,
   DEFAULT_DEMO_ITEMS,
 } from '../lib/inventory';
@@ -32,9 +32,7 @@ const compsList: Component[] = componentsData as Component[];
 export default function Inventory() {
   const { user } = useAuth();
   const { t } = useLanguage();
-  const [items, setItems] = useState<InventoryItem[]>(() => getLocalInventory());
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { items, setItems, loading, error, setError, saveItem, removeItem } = useInventory(user?.id);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showSmartInput, setShowSmartInput] = useState(false);
 
@@ -43,62 +41,14 @@ export default function Inventory() {
   const [newQty, setNewQty] = useState(1);
   const [newCond, setNewCond] = useState<Condition>('untested');
   const [newShare, setNewShare] = useState(false);
-  const [autocomplete, setAutocomplete] = useState<Component[]>([]);
   const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
-  const fetchInventory = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    if (!user) {
-      setItems(getLocalInventory());
-      setLoading(false);
-      return;
-    }
-    try {
-      const { data, error: supaError } = await supabase
-        .from('inventory_items')
-        .select('id, component_id, quantity, condition, available_to_share')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (supaError) {
-        // Fallback to local storage if Supabase table is not yet migrated
-        const local = getLocalInventory();
-        setItems(local);
-        return;
-      }
-
-      // Join with local component names
-      const compMap = new Map(compsList.map(c => [c.id, c.name]));
-      const enriched: InventoryItem[] = (data ?? []).map((item: any) => ({
-        id: item.id,
-        component_id: item.component_id,
-        componentName: compMap.get(item.component_id) ?? item.component_id ?? 'Unknown',
-        quantity: item.quantity,
-        condition: item.condition as Condition,
-        available_to_share: Boolean(item.available_to_share),
-      }));
-      setItems(enriched);
-      saveLocalInventory(enriched);
-    } catch {
-      setItems(getLocalInventory());
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    fetchInventory();
-  }, [fetchInventory]);
-
-  // Autocomplete
-  useEffect(() => {
-    if (!newComp.trim()) {
-      setAutocomplete([]);
-      return;
-    }
+  // Derive autocomplete synchronously without useEffect
+  const autocomplete = useMemo(() => {
+    if (!newComp.trim()) return [];
     const q = newComp.toLowerCase();
-    setAutocomplete(compsList.filter(c => c.name.toLowerCase().includes(q)).slice(0, 8));
+    return compsList.filter(c => c.name.toLowerCase().includes(q)).slice(0, 8);
   }, [newComp]);
 
   async function addItem() {
@@ -112,47 +62,13 @@ export default function Inventory() {
     setSaving(true);
     setError(null);
 
-    const localItem: InventoryItem = {
-      id: `inv-${Date.now()}`,
-      component_id: comp.id,
-      componentName: comp.name,
-      quantity: newQty,
-      condition: newCond,
-      available_to_share: newShare,
-    };
-
     try {
-      if (user) {
-        const { error: supaError } = await supabase.from('inventory_items').upsert({
-          user_id: user.id,
-          component_id: comp.id,
-          quantity: newQty,
-          condition: newCond,
-          available_to_share: newShare,
-        }, { onConflict: 'user_id,component_id' });
-
-        if (supaError) {
-          console.warn('Supabase sync skipped, saving locally:', supaError.message);
-        }
-      }
-
-      // Update local state and storage
-      setItems(prev => {
-        const existingIdx = prev.findIndex(p => p.component_id === comp.id);
-        let updated: InventoryItem[];
-        if (existingIdx >= 0) {
-          updated = [...prev];
-          updated[existingIdx] = {
-            ...updated[existingIdx],
-            quantity: newQty,
-            condition: newCond,
-            available_to_share: newShare,
-          };
-        } else {
-          updated = [localItem, ...prev];
-        }
-        saveLocalInventory(updated);
-        return updated;
+      await saveItem({
+        component_id: comp.id,
+        componentName: comp.name,
+        quantity: Math.max(1, newQty),
+        condition: newCond,
+        available_to_share: newShare,
       });
 
       setNewComp('');
@@ -160,8 +76,10 @@ export default function Inventory() {
       setNewCond('untested');
       setNewShare(false);
       setShowAddForm(false);
-    } catch (e: any) {
-      setError(e.message || 'Error saving item');
+      setToast(`Added ${comp.name} to inventory!`);
+      setTimeout(() => setToast(null), 3000);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Error saving item');
     } finally {
       setSaving(false);
     }
@@ -170,22 +88,12 @@ export default function Inventory() {
   async function deleteItem(item: InventoryItem) {
     if (!confirm(`Remove ${item.componentName} from your inventory?`)) return;
     try {
-      if (user) {
-        await supabase
-          .from('inventory_items')
-          .delete()
-          .eq('component_id', item.component_id)
-          .eq('user_id', user.id);
-      }
+      await removeItem(item.component_id, item.id);
+      setToast(`Removed ${item.componentName}`);
+      setTimeout(() => setToast(null), 3000);
     } catch {
-      // ignore network errors on delete
+      // fallback
     }
-
-    setItems(prev => {
-      const filtered = prev.filter(i => i.id !== item.id && i.component_id !== item.component_id);
-      saveLocalInventory(filtered);
-      return filtered;
-    });
   }
 
   async function toggleShare(item: InventoryItem) {
@@ -201,8 +109,8 @@ export default function Inventory() {
       // ignore
     }
 
-    setItems(prev => {
-      const updated = prev.map(i => i.id === item.id ? { ...i, available_to_share: updatedVal } : i);
+    setItems((prev: InventoryItem[]) => {
+      const updated = prev.map((i: InventoryItem) => i.id === item.id ? { ...i, available_to_share: updatedVal } : i);
       saveLocalInventory(updated);
       return updated;
     });
@@ -230,7 +138,7 @@ export default function Inventory() {
       };
     });
 
-    setItems(prev => {
+    setItems((prev: InventoryItem[]) => {
       const merged = [...prev];
       for (const item of formatted) {
         const existingIdx = merged.findIndex(m => m.component_id === item.component_id);
@@ -334,6 +242,13 @@ export default function Inventory() {
           </div>
         </div>
 
+        {/* Toast confirmation */}
+        {toast && (
+          <div style={{ padding: '12px 16px', background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: 'var(--radius-md)', color: 'var(--color-green-700)', fontSize: 14, fontWeight: 600, marginBottom: 16 }}>
+            ✓ {toast}
+          </div>
+        )}
+
         {/* Error */}
         {error && (
           <div style={{ padding: '12px 16px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 'var(--radius-md)', color: 'var(--color-red-500)', fontSize: 14, marginBottom: 16 }}>
@@ -372,11 +287,11 @@ export default function Inventory() {
                 />
                 {autocomplete.length > 0 && (
                   <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--surface-card)', border: '1px solid var(--surface-border)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-lg)', zIndex: 50, overflow: 'hidden' }}>
-                    {autocomplete.map(c => (
+                    {autocomplete.map((c: Component) => (
                       <button
                         key={c.id}
                         type="button"
-                        onClick={() => { setNewComp(c.name); setAutocomplete([]); }}
+                        onClick={() => setNewComp(c.name)}
                         style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 14px', border: 'none', background: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}
                         onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-tint)')}
                         onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -482,7 +397,7 @@ export default function Inventory() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {items.map(item => (
+            {items.map((item: InventoryItem) => (
               <div
                 key={item.id}
                 style={{

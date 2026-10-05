@@ -10,7 +10,7 @@ import {
   Info,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { useInventory, toInventoryEntries } from '../lib/inventory';
 import { matchProjects, type Project, type Component } from '../lib/engine/matcher';
 import { unlockCounts } from '../lib/engine/oneAway';
@@ -90,13 +90,7 @@ export default function Dashboard() {
   const indiaAccumulatedKg = Math.round(secondsOnPage * IMPACT_CONFIG.INDIA_EWASTE_PER_SECOND_KG);
 
   // Assessed device counts by class
-  const [deviceClassCounts, setDeviceClassCounts] = useState<Record<DeviceClass, number>>({
-    A: 0, B: 0, C: 0, D: 0, E: 0,
-  });
-
-  useEffect(() => {
-    setDeviceClassCounts(getDeviceCountsByClass());
-  }, []);
+  const [deviceClassCounts] = useState<Record<DeviceClass, number>>(() => getDeviceCountsByClass());
 
   const totalDevicesAssessed = Object.values(deviceClassCounts).reduce((a, b) => a + b, 0);
 

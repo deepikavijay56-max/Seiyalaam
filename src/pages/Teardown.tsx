@@ -31,6 +31,22 @@ const CLASS_COLORS: Record<DeviceClass, { bg: string; text: string; border: stri
   E: { bg: 'rgba(214, 69, 69, 0.12)', text: 'var(--class-e)', border: 'var(--class-e)' },
 };
 
+function createAssessmentRecord(
+  deviceId: string,
+  deviceName: string,
+  deviceClass: DeviceClass,
+  answers: Partial<ChecklistAnswers>
+) {
+  return {
+    id: `dev-eval-${Date.now()}`,
+    deviceId,
+    deviceName,
+    deviceClass,
+    answers,
+    assessedAt: new Date().toISOString(),
+  };
+}
+
 export default function Teardown() {
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>(allDevices[0].id);
   const [answers, setAnswers] = useState<Partial<ChecklistAnswers>>({});
@@ -58,14 +74,7 @@ export default function Teardown() {
   }
 
   function handleSave() {
-    saveAssessedDevice({
-      id: `dev-eval-${Date.now()}`,
-      deviceId: currentDevice.id,
-      deviceName: currentDevice.name,
-      deviceClass: assignedClass,
-      answers,
-      assessedAt: new Date().toISOString(),
-    });
+    saveAssessedDevice(createAssessmentRecord(currentDevice.id, currentDevice.name, assignedClass, answers));
     setSaveSuccess(true);
     refresh();
   }

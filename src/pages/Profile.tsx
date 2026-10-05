@@ -1,11 +1,9 @@
-import { User, Mail, Globe, Shield, LogOut } from 'lucide-react';
+import { User, Mail, Shield, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Profile() {
   const { user, profile, signOut } = useAuth();
-  const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
 
   async function handleLogout() {
@@ -60,31 +58,6 @@ export default function Profile() {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 16px', background: 'var(--surface-bg)', borderRadius: 'var(--radius-md)' }}>
-              <Globe size={18} color="var(--text-muted)" />
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Preferred Language</div>
-                  <div style={{ fontSize: 14, fontWeight: 600 }}>{language === 'ta' ? 'தமிழ் (Tamil)' : 'English'}</div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setLanguage(language === 'en' ? 'ta' : 'en')}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: 'var(--radius-md)',
-                    border: '1px solid var(--surface-border)',
-                    background: 'var(--surface-card)',
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Switch to {language === 'en' ? 'தமிழ்' : 'English'}
-                </button>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 16px', background: 'var(--surface-bg)', borderRadius: 'var(--radius-md)' }}>
               <Shield size={18} color="var(--text-muted)" />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Role</div>
@@ -114,7 +87,7 @@ export default function Profile() {
             }}
           >
             <LogOut size={16} />
-            {t('nav.logout')}
+            Logout
           </button>
         </div>
       </div>

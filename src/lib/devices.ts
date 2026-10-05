@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import devicesData from '../data/devices.json';
 import {
   classifyDevice,
@@ -79,10 +79,6 @@ export function getDeviceCountsByClass(): Record<DeviceClass, number> {
 
 export function useAssessedDevices() {
   const [devices, setDevices] = useState<AssessedDevice[]>(() => getAssessedDevices());
-
-  useEffect(() => {
-    setDevices(getAssessedDevices());
-  }, []);
 
   const refresh = () => setDevices(getAssessedDevices());
 

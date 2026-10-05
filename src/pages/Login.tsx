@@ -1,27 +1,34 @@
 import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Leaf, AlertCircle } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../hooks/useAuth';
+import { useLanguage } from '../hooks/useLanguage';
 
 export default function Login() {
   const { signIn, user, loading, error, clearError } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    if (user) navigate('/suggestions', { replace: true });
-  }, [user, navigate]);
+  const fromPath = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/dashboard';
 
   useEffect(() => {
-    return () => clearError();
-  }, []);
+    if (user) {
+      navigate(fromPath, { replace: true });
+    }
+  }, [user, navigate, fromPath]);
+
+  useEffect(() => {
+    return () => {
+      clearError();
+    };
+  }, [clearError]);
 
   function validate() {
     const errs: Record<string, string> = {};

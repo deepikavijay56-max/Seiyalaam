@@ -11,8 +11,8 @@ import {
   AlertCircle,
   Recycle,
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../hooks/useAuth';
+import { useLanguage } from '../hooks/useLanguage';
 import {
   matchProjects,
   type Project,
@@ -122,26 +122,49 @@ export default function Suggestions() {
             </p>
           </div>
 
-          <Link
-            to="/inventory"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '10px 16px',
-              borderRadius: 'var(--radius-md)',
-              background: 'var(--surface-card)',
-              color: 'var(--text-primary)',
-              border: '1px solid var(--surface-border)',
-              fontWeight: 600,
-              fontSize: 14,
-              textDecoration: 'none',
-              transition: 'border-color 0.2s, transform 0.1s',
-            }}
-          >
-            <Package size={16} color="var(--color-green-500)" />
-            Manage Inventory
-          </Link>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <Link
+              to="/kandupidi"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '10px 18px',
+                borderRadius: 'var(--radius-md)',
+                background: 'linear-gradient(135deg, #10B981, #059669)',
+                color: 'white',
+                border: 'none',
+                fontWeight: 700,
+                fontSize: 14,
+                textDecoration: 'none',
+                boxShadow: '0 4px 14px rgba(16,185,129,0.3)',
+              }}
+            >
+              <Sparkles size={16} />
+              Kandupidi Mode (AI Inventor)
+            </Link>
+
+            <Link
+              to="/inventory"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '10px 16px',
+                borderRadius: 'var(--radius-md)',
+                background: 'var(--surface-card)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--surface-border)',
+                fontWeight: 600,
+                fontSize: 14,
+                textDecoration: 'none',
+                transition: 'border-color 0.2s, transform 0.1s',
+              }}
+            >
+              <Package size={16} color="var(--color-green-500)" />
+              Manage Inventory
+            </Link>
+          </div>
         </div>
 
         {/* Top Unlock / One-Part Away Insight Banner */}
@@ -181,25 +204,45 @@ export default function Suggestions() {
                 </p>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setFeasibilityFilter('one-away')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '8px 16px',
-                borderRadius: 'var(--radius-md)',
-                background: 'var(--color-green-500)',
-                color: 'white',
-                border: 'none',
-                fontWeight: 600,
-                fontSize: 13,
-                cursor: 'pointer',
-              }}
-            >
-              View 1-Part Away Projects
-            </button>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <Link
+                to="/community"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '8px 16px',
+                  borderRadius: 'var(--radius-md)',
+                  background: 'var(--color-slate-900)',
+                  color: 'white',
+                  border: 'none',
+                  fontWeight: 600,
+                  fontSize: 13,
+                  textDecoration: 'none',
+                }}
+              >
+                Find on Community Board
+              </Link>
+              <button
+                type="button"
+                onClick={() => setFeasibilityFilter('one-away')}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '8px 16px',
+                  borderRadius: 'var(--radius-md)',
+                  background: 'var(--color-green-500)',
+                  color: 'white',
+                  border: 'none',
+                  fontWeight: 600,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                }}
+              >
+                View 1-Part Away Projects
+              </button>
+            </div>
           </div>
         )}
 
@@ -408,6 +451,7 @@ export default function Suggestions() {
               return (
                 <div
                   key={project.id}
+                  className="glow-card"
                   style={{
                     background: 'var(--surface-card)',
                     border: '1px solid var(--surface-border)',
@@ -417,18 +461,7 @@ export default function Suggestions() {
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                     boxShadow: 'var(--shadow-sm)',
-                    transition: 'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
                     position: 'relative',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                    e.currentTarget.style.borderColor = 'var(--color-green-300)';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = 'none';
-                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-                    e.currentTarget.style.borderColor = 'var(--surface-border)';
                   }}
                 >
                   <div>

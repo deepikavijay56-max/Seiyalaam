@@ -46,6 +46,8 @@ export interface Project {
   requirements: Requirement[];
   steps: { step: number; title: string; desc: string }[];
   safety_notes: string | null;
+  is_ai_generated?: boolean;
+  created_by?: string;
 }
 
 export interface PartResult {

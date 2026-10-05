@@ -32,7 +32,7 @@ const compsList = componentsData as { id: string; name: string; category: string
 export default function SmartInputModal({ isOpen, onClose, onAddComponents }: SmartInputModalProps) {
   const [activeTab, setActiveTab] = useState<'text' | 'voice' | 'photo'>('voice');
   const [textInput, setTextInput] = useState('');
-  const [speechLanguage, setSpeechLanguage] = useState<'en-IN' | 'ta-IN'>('en-IN');
+  const [speechLanguage] = useState<'en-IN'>('en-IN');
   const [isRecording, setIsRecording] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoProcessing, setPhotoProcessing] = useState(false);
@@ -283,7 +283,7 @@ export default function SmartInputModal({ isOpen, onClose, onAddComponents }: Sm
             }}
           >
             <Mic size={16} />
-            Voice (English & தமிழ்)
+            Voice Dictation
           </button>
 
           <button
@@ -334,42 +334,6 @@ export default function SmartInputModal({ isOpen, onClose, onAddComponents }: Sm
           {/* Tab 1: Voice Input */}
           {activeTab === 'voice' && (
             <div style={{ textAlign: 'center', padding: '16px 0' }}>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: 10, marginBottom: 20 }}>
-                <button
-                  type="button"
-                  onClick={() => setSpeechLanguage('en-IN')}
-                  style={{
-                    padding: '6px 14px',
-                    borderRadius: 'var(--radius-full)',
-                    border: '1px solid',
-                    borderColor: speechLanguage === 'en-IN' ? 'var(--color-green-500)' : 'var(--surface-border)',
-                    background: speechLanguage === 'en-IN' ? 'var(--surface-tint)' : 'var(--surface-card)',
-                    color: speechLanguage === 'en-IN' ? 'var(--color-green-600)' : 'var(--text-secondary)',
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  English (India)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSpeechLanguage('ta-IN')}
-                  style={{
-                    padding: '6px 14px',
-                    borderRadius: 'var(--radius-full)',
-                    border: '1px solid',
-                    borderColor: speechLanguage === 'ta-IN' ? 'var(--color-green-500)' : 'var(--surface-border)',
-                    background: speechLanguage === 'ta-IN' ? 'var(--surface-tint)' : 'var(--surface-card)',
-                    color: speechLanguage === 'ta-IN' ? 'var(--color-green-600)' : 'var(--text-secondary)',
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  தமிழ் (Tamil)
-                </button>
-              </div>
 
               {/* Big Mic Button */}
               <button
@@ -433,7 +397,7 @@ export default function SmartInputModal({ isOpen, onClose, onAddComponents }: Sm
                   borderRadius: '50%',
                   background: isGeminiConfigured() ? 'var(--color-green-500)' : 'var(--color-amber-500)',
                 }} />
-                {isGeminiConfigured() ? 'Gemini Vision AI Connected' : 'Offline Simulation Mode (Set VITE_GEMINI_API_KEY in .env.local)'}
+                {isGeminiConfigured() ? 'Gemini AI Vision Ready' : 'Heuristic Vision Scanner Active'}
               </div>
 
               <label style={{

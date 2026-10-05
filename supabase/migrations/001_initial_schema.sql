@@ -22,17 +22,41 @@ create table if not exists profiles (
 );
 
 -- Trigger: auto-create profile on signup
-create or replace function handle_new_user()
-returns trigger language plpgsql security definer as $$
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_display_name text;
+  v_area text;
+  v_language text;
 begin
-  insert into profiles (id, display_name, area, language, role)
-  values (
-    new.id,
-    coalesce(new.raw_user_meta_data->>'display_name', split_part(new.email, '@', 1)),
-    new.raw_user_meta_data->>'area',
-    coalesce(new.raw_user_meta_data->>'language', 'en'),
-    'user'
+  v_display_name := coalesce(
+    nullif(trim(new.raw_user_meta_data->>'display_name'), ''),
+    nullif(trim(new.raw_user_meta_data->>'name'), ''),
+    nullif(trim(new.raw_user_meta_data->>'full_name'), ''),
+    nullif(trim(split_part(new.email, '@', 1)), ''),
+    'Maker'
   );
+  v_area := nullif(trim(new.raw_user_meta_data->>'area'), '');
+  if (new.raw_user_meta_data->>'language') in ('en', 'ta') then
+    v_language := new.raw_user_meta_data->>'language';
+  else
+    v_language := 'en';
+  end if;
+
+  insert into public.profiles (id, display_name, area, language, role, created_at)
+  values (new.id, v_display_name, v_area, v_language, 'user', now())
+  on conflict (id) do update set
+    display_name = coalesce(nullif(excluded.display_name, ''), public.profiles.display_name),
+    area = coalesce(excluded.area, public.profiles.area),
+    language = coalesce(excluded.language, public.profiles.language);
+
+  return new;
+exception when others then
+  raise warning 'handle_new_user warning for user %: %', new.id, sqlerrm;
   return new;
 end;
 $$;
@@ -40,7 +64,7 @@ $$;
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
-  for each row execute procedure handle_new_user();
+  for each row execute function public.handle_new_user();
 
 -- Public display_name view (no personal data)
 create or replace view public_profiles as

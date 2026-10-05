@@ -1,27 +1,34 @@
 import { useState, useEffect } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Leaf, AlertCircle, CheckCircle } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../hooks/useAuth';
+import { useLanguage } from '../hooks/useLanguage';
 
 export default function Signup() {
   const { signUp, user, loading, error, clearError } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [form, setForm] = useState({ displayName: '', email: '', password: '', confirmPassword: '' });
   const [showPass, setShowPass] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    if (user) navigate('/suggestions', { replace: true });
-  }, [user, navigate]);
+  const fromPath = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/dashboard';
 
   useEffect(() => {
-    return () => clearError();
-  }, []);
+    if (user) {
+      navigate(fromPath, { replace: true });
+    }
+  }, [user, navigate, fromPath]);
+
+  useEffect(() => {
+    return () => {
+      clearError();
+    };
+  }, [clearError]);
 
   function validate() {
     const errs: Record<string, string> = {};
@@ -39,8 +46,8 @@ export default function Signup() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!validate()) return;
-    await signUp(form.email, form.password, form.displayName);
-    if (!error) setSuccess(true);
+    const ok = await signUp(form.email, form.password, form.displayName);
+    if (ok) setSuccess(true);
   }
 
   const field = (name: keyof typeof form) => ({

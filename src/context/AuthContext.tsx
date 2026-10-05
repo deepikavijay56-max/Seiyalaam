@@ -7,22 +7,10 @@ import { AuthContext } from './authContextDef';
 
 export type { Profile, AuthContextValue };
 
-const LOCAL_AUTH_KEY = 'seiyalaam_auth_user';
-
-function getLocalStoredUser(): { user: User; profile: Profile } | null {
-  try {
-    const raw = localStorage.getItem(LOCAL_AUTH_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Lazy state initialization to avoid synchronous setState inside mount effect
-  const [user, setUser] = useState<User | null>(() => getLocalStoredUser()?.user ?? null);
+  const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(() => getLocalStoredUser()?.profile ?? null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,12 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .maybeSingle();
 
       if (!supaError && data) {
-        const prof = data as Profile;
-        setProfile(prof);
-        const stored = getLocalStoredUser();
-        if (stored?.user) {
-          localStorage.setItem(LOCAL_AUTH_KEY, JSON.stringify({ user: stored.user, profile: prof }));
-        }
+        setProfile(data as Profile);
       } else if (!data) {
         // Fallback: If trigger was delayed or row is missing, safely ensure profile row exists
         const { data: authData } = await supabase.auth.getUser();
@@ -55,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             id: userId,
             display_name: fallbackName,
             area: currentUser.user_metadata?.area || null,
-            language: 'en',
+            language: (currentUser.user_metadata?.language as 'en' | 'ta') || 'en',
             role: 'user',
           };
           try {
@@ -71,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Load session on mount
+  // Load session on startup
   useEffect(() => {
     let isMounted = true;
 
@@ -84,8 +67,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           fetchProfile(currentSession.user.id);
         } else {
           setUser(null);
+          setSession(null);
           setProfile(null);
-          localStorage.removeItem(LOCAL_AUTH_KEY);
         }
       })
       .catch((err) => {
@@ -105,7 +88,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(null);
         setUser(null);
         setProfile(null);
-        localStorage.removeItem(LOCAL_AUTH_KEY);
       }
     });
 
@@ -120,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       if (!isSupabaseConfigured()) {
-        setError('Backend is not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your Vercel Project Settings and redeploy.');
+        setError('Supabase configuration is missing or invalid. Please check your environment variables.');
         return false;
       }
 
@@ -142,6 +124,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw supaError;
       }
 
+      // Check for duplicate account where Supabase returned user with empty identities (email enumeration protection)
+      if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        setError('This email is already registered. Try signing in instead.');
+        return false;
+      }
+
       if (data?.user) {
         setUser(data.user);
         setSession(data.session);
@@ -154,41 +142,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           role: 'user',
         };
         setProfile(newProf);
-        localStorage.setItem(LOCAL_AUTH_KEY, JSON.stringify({ user: data.user, profile: newProf }));
 
-        // Ensure profile row exists in database if authenticated session is present
         if (data.session) {
-          try {
-            await supabase.from('profiles').upsert(newProf);
-          } catch {
-            // Handled by database trigger
-          }
+          await fetchProfile(data.user.id);
         }
         return true;
       }
       return false;
     } catch (e: unknown) {
       console.error('[Seiyalaam Auth] Signup technical error:', e);
-      const rawMsg = e instanceof Error ? e.message : 'Sign up failed';
+      const rawMsg = e instanceof Error ? e.message : (typeof e === 'object' && e !== null && 'message' in e ? String((e as { message: unknown }).message) : 'Sign up failed');
+      const lower = rawMsg.toLowerCase();
+      const status = typeof e === 'object' && e !== null && 'status' in e ? (e as { status: unknown }).status : null;
+
       let userFriendlyMsg = rawMsg;
 
-      // Transform technical PostgreSQL / Supabase errors into helpful user-facing text
-      if (rawMsg.includes('Database error saving new user') || rawMsg.includes('database error')) {
-        userFriendlyMsg = "We couldn't create your account right now. Please try again.";
-      } else if (rawMsg.includes('User already registered') || rawMsg.includes('already registered') || rawMsg.includes('already exists')) {
+      if (
+        lower.includes('user already registered') ||
+        lower.includes('already registered') ||
+        lower.includes('already exists') ||
+        status === 422
+      ) {
         userFriendlyMsg = 'This email is already registered. Try signing in instead.';
-      } else if (rawMsg.includes('Password should be at least') || rawMsg.includes('weak password')) {
+      } else if (
+        lower.includes('database error') ||
+        lower.includes('saving new user') ||
+        status === 500
+      ) {
+        userFriendlyMsg = "We couldn't finish creating your account. Please try again.";
+      } else if (
+        lower.includes('password') && (lower.includes('least') || lower.includes('short') || lower.includes('weak'))
+      ) {
         userFriendlyMsg = 'Password must be at least 8 characters long.';
-      } else if (rawMsg.includes('invalid') && rawMsg.includes('email')) {
-        userFriendlyMsg = 'Please check your details and try again.';
-      } else if (rawMsg.includes('rate limit') || rawMsg.includes('over_email_send_rate_limit')) {
-        userFriendlyMsg = 'Email confirmation rate limit reached. Please disable "Confirm email" in Supabase Dashboard (Auth -> Providers -> Email) or wait a few minutes.';
-      } else if (rawMsg.includes('Failed to fetch') || rawMsg.includes('NetworkError') || rawMsg.includes('fetch')) {
-        if (!isSupabaseConfigured()) {
-          userFriendlyMsg = 'Backend is not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Vercel settings and redeploy.';
-        } else {
-          userFriendlyMsg = 'Cannot reach backend server. Please check your internet connection or Supabase service status.';
-        }
+      } else if (
+        lower.includes('rate limit') ||
+        lower.includes('over_email_send_rate_limit')
+      ) {
+        userFriendlyMsg = 'Too many attempts. Please wait a few moments and try again.';
+      } else if (
+        e instanceof TypeError ||
+        lower.includes('failed to fetch') ||
+        lower.includes('networkerror') ||
+        lower.includes('network error')
+      ) {
+        userFriendlyMsg = 'Unable to connect right now. Please check your connection and try again.';
       }
 
       setError(userFriendlyMsg);
@@ -203,7 +200,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       if (!isSupabaseConfigured()) {
-        setError('Backend is not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your Vercel Project Settings and redeploy.');
+        setError('Supabase configuration is missing or invalid. Please check your environment variables.');
         return false;
       }
 
@@ -226,19 +223,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return false;
     } catch (e: unknown) {
       console.error('[Seiyalaam Auth] Signin technical error:', e);
-      const rawMsg = e instanceof Error ? e.message : 'Sign in failed';
+      const rawMsg = e instanceof Error ? e.message : (typeof e === 'object' && e !== null && 'message' in e ? String((e as { message: unknown }).message) : 'Sign in failed');
+      const lower = rawMsg.toLowerCase();
+
       let userFriendlyMsg = rawMsg;
 
-      if (rawMsg.includes('Invalid login credentials') || rawMsg.includes('invalid_grant')) {
+      if (
+        lower.includes('invalid login credentials') ||
+        lower.includes('invalid_grant') ||
+        lower.includes('wrong password') ||
+        lower.includes('user not found')
+      ) {
         userFriendlyMsg = 'Invalid email or password. Please check your details and try again.';
-      } else if (rawMsg.includes('Email not confirmed')) {
-        userFriendlyMsg = 'Account created. Please check your email to verify your account.';
-      } else if (rawMsg.includes('Failed to fetch') || rawMsg.includes('NetworkError')) {
-        if (!isSupabaseConfigured()) {
-          userFriendlyMsg = 'Backend is not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Vercel settings and redeploy.';
-        } else {
-          userFriendlyMsg = 'Cannot reach backend server. Please check your internet connection or Supabase service status.';
-        }
+      } else if (lower.includes('email not confirmed')) {
+        userFriendlyMsg = 'Please verify your email address before signing in.';
+      } else if (
+        e instanceof TypeError ||
+        lower.includes('failed to fetch') ||
+        lower.includes('networkerror') ||
+        lower.includes('network error')
+      ) {
+        userFriendlyMsg = 'Unable to connect right now. Please check your connection and try again.';
       }
 
       setError(userFriendlyMsg);
@@ -250,7 +255,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signOut() {
     setError(null);
-    localStorage.removeItem(LOCAL_AUTH_KEY);
     setUser(null);
     setSession(null);
     setProfile(null);
@@ -282,3 +286,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     </AuthContext.Provider>
   );
 }
+

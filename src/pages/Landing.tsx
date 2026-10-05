@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Leaf, Recycle, Zap, Users, ArrowRight, CircuitBoard } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';

@@ -1,21 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Trash2, Edit2, Check, X, Package, ToggleLeft, ToggleRight } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Plus, Trash2, Package, ToggleLeft, ToggleRight, Sparkles, Mic, Camera } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { supabase } from '../lib/supabase';
 import componentsData from '../data/components.json';
+import SmartInputModal from '../components/SmartInputModal';
+import {
+  type Condition,
+  type InventoryItem,
+  getLocalInventory,
+  saveLocalInventory,
+  DEFAULT_DEMO_ITEMS,
+} from '../lib/inventory';
 
-type Condition = 'tested' | 'untested' | 'partial' | 'faulty';
-
-interface Component { id: string; name: string; category: string; weight_g: number; }
-
-interface InventoryItem {
+interface Component {
   id: string;
-  component_id: string;
-  componentName: string;
-  quantity: number;
-  condition: Condition;
-  available_to_share: boolean;
+  name: string;
+  category: string;
+  weight_g: number;
 }
 
 const CONDITIONS: { value: Condition; label: string; color: string }[] = [
@@ -30,11 +32,11 @@ const compsList: Component[] = componentsData as Component[];
 export default function Inventory() {
   const { user } = useAuth();
   const { t } = useLanguage();
-  const [items, setItems] = useState<InventoryItem[]>([]);
+  const [items, setItems] = useState<InventoryItem[]>(() => getLocalInventory());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
+  const [showSmartInput, setShowSmartInput] = useState(false);
 
   // Add form state
   const [newComp, setNewComp] = useState('');
@@ -45,81 +47,223 @@ export default function Inventory() {
   const [saving, setSaving] = useState(false);
 
   const fetchInventory = useCallback(async () => {
-    if (!user) return;
     setLoading(true);
     setError(null);
+    if (!user) {
+      setItems(getLocalInventory());
+      setLoading(false);
+      return;
+    }
     try {
-      const { data, error } = await supabase
+      const { data, error: supaError } = await supabase
         .from('inventory_items')
         .select('id, component_id, quantity, condition, available_to_share')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (supaError) {
+        // Fallback to local storage if Supabase table is not yet migrated
+        const local = getLocalInventory();
+        setItems(local);
+        return;
+      }
 
       // Join with local component names
       const compMap = new Map(compsList.map(c => [c.id, c.name]));
-      const enriched = (data ?? []).map((item: any) => ({
-        ...item,
-        componentName: compMap.get(item.component_id) ?? 'Unknown',
+      const enriched: InventoryItem[] = (data ?? []).map((item: any) => ({
+        id: item.id,
+        component_id: item.component_id,
+        componentName: compMap.get(item.component_id) ?? item.component_id ?? 'Unknown',
+        quantity: item.quantity,
+        condition: item.condition as Condition,
+        available_to_share: Boolean(item.available_to_share),
       }));
       setItems(enriched);
-    } catch (e: any) {
-      setError(e.message);
+      saveLocalInventory(enriched);
+    } catch {
+      setItems(getLocalInventory());
     } finally {
       setLoading(false);
     }
   }, [user]);
 
-  useEffect(() => { fetchInventory(); }, [fetchInventory]);
+  useEffect(() => {
+    fetchInventory();
+  }, [fetchInventory]);
 
   // Autocomplete
   useEffect(() => {
-    if (!newComp.trim()) { setAutocomplete([]); return; }
+    if (!newComp.trim()) {
+      setAutocomplete([]);
+      return;
+    }
     const q = newComp.toLowerCase();
     setAutocomplete(compsList.filter(c => c.name.toLowerCase().includes(q)).slice(0, 8));
   }, [newComp]);
 
   async function addItem() {
-    if (!user || !newComp.trim()) return;
+    if (!newComp.trim()) return;
     const comp = compsList.find(c => c.name.toLowerCase() === newComp.toLowerCase().trim());
-    if (!comp) { setError('Please select a component from the list'); return; }
+    if (!comp) {
+      setError('Please select a component from the list');
+      return;
+    }
 
     setSaving(true);
     setError(null);
-    try {
-      const { error } = await supabase.from('inventory_items').upsert({
-        user_id: user.id,
-        component_id: comp.id,
-        quantity: newQty,
-        condition: newCond,
-        available_to_share: newShare,
-      }, { onConflict: 'user_id,component_id' });
 
-      if (error) throw error;
-      setNewComp(''); setNewQty(1); setNewCond('untested'); setNewShare(false);
+    const localItem: InventoryItem = {
+      id: `inv-${Date.now()}`,
+      component_id: comp.id,
+      componentName: comp.name,
+      quantity: newQty,
+      condition: newCond,
+      available_to_share: newShare,
+    };
+
+    try {
+      if (user) {
+        const { error: supaError } = await supabase.from('inventory_items').upsert({
+          user_id: user.id,
+          component_id: comp.id,
+          quantity: newQty,
+          condition: newCond,
+          available_to_share: newShare,
+        }, { onConflict: 'user_id,component_id' });
+
+        if (supaError) {
+          console.warn('Supabase sync skipped, saving locally:', supaError.message);
+        }
+      }
+
+      // Update local state and storage
+      setItems(prev => {
+        const existingIdx = prev.findIndex(p => p.component_id === comp.id);
+        let updated: InventoryItem[];
+        if (existingIdx >= 0) {
+          updated = [...prev];
+          updated[existingIdx] = {
+            ...updated[existingIdx],
+            quantity: newQty,
+            condition: newCond,
+            available_to_share: newShare,
+          };
+        } else {
+          updated = [localItem, ...prev];
+        }
+        saveLocalInventory(updated);
+        return updated;
+      });
+
+      setNewComp('');
+      setNewQty(1);
+      setNewCond('untested');
+      setNewShare(false);
       setShowAddForm(false);
-      await fetchInventory();
     } catch (e: any) {
-      setError(e.message);
+      setError(e.message || 'Error saving item');
     } finally {
       setSaving(false);
     }
   }
 
-  async function deleteItem(id: string) {
-    if (!confirm('Remove this component from your inventory?')) return;
-    const { error } = await supabase.from('inventory_items').delete().eq('id', id).eq('user_id', user!.id);
-    if (error) { setError(error.message); return; }
-    setItems(items.filter(i => i.id !== id));
+  async function deleteItem(item: InventoryItem) {
+    if (!confirm(`Remove ${item.componentName} from your inventory?`)) return;
+    try {
+      if (user) {
+        await supabase
+          .from('inventory_items')
+          .delete()
+          .eq('component_id', item.component_id)
+          .eq('user_id', user.id);
+      }
+    } catch {
+      // ignore network errors on delete
+    }
+
+    setItems(prev => {
+      const filtered = prev.filter(i => i.id !== item.id && i.component_id !== item.component_id);
+      saveLocalInventory(filtered);
+      return filtered;
+    });
   }
 
   async function toggleShare(item: InventoryItem) {
-    const { error } = await supabase.from('inventory_items')
-      .update({ available_to_share: !item.available_to_share })
-      .eq('id', item.id).eq('user_id', user!.id);
-    if (error) { setError(error.message); return; }
-    setItems(items.map(i => i.id === item.id ? { ...i, available_to_share: !i.available_to_share } : i));
+    const updatedVal = !item.available_to_share;
+    try {
+      if (user) {
+        await supabase.from('inventory_items')
+          .update({ available_to_share: updatedVal })
+          .eq('id', item.id)
+          .eq('user_id', user.id);
+      }
+    } catch {
+      // ignore
+    }
+
+    setItems(prev => {
+      const updated = prev.map(i => i.id === item.id ? { ...i, available_to_share: updatedVal } : i);
+      saveLocalInventory(updated);
+      return updated;
+    });
+  }
+
+  function loadDemoItems() {
+    setItems(DEFAULT_DEMO_ITEMS);
+    saveLocalInventory(DEFAULT_DEMO_ITEMS);
+  }
+
+  async function handleSmartAdd(newItems: { componentName: string; quantity: number; condition: Condition }[]) {
+    if (newItems.length === 0) return;
+
+    const compMap = new Map(compsList.map(c => [c.name.toLowerCase().trim(), c]));
+
+    const formatted: InventoryItem[] = newItems.map((item, idx) => {
+      const comp = compMap.get(item.componentName.toLowerCase().trim());
+      return {
+        id: `smart-${Date.now()}-${idx}`,
+        component_id: comp?.id ?? item.componentName.toLowerCase().replace(/\s+/g, '-'),
+        componentName: comp?.name ?? item.componentName,
+        quantity: item.quantity,
+        condition: item.condition,
+        available_to_share: false,
+      };
+    });
+
+    setItems(prev => {
+      const merged = [...prev];
+      for (const item of formatted) {
+        const existingIdx = merged.findIndex(m => m.component_id === item.component_id);
+        if (existingIdx >= 0) {
+          merged[existingIdx] = {
+            ...merged[existingIdx],
+            quantity: merged[existingIdx].quantity + item.quantity,
+            condition: item.condition,
+          };
+        } else {
+          merged.unshift(item);
+        }
+      }
+      saveLocalInventory(merged);
+      return merged;
+    });
+
+    // Try Supabase sync if user logged in
+    if (user) {
+      for (const item of formatted) {
+        try {
+          await supabase.from('inventory_items').upsert({
+            user_id: user.id,
+            component_id: item.component_id,
+            quantity: item.quantity,
+            condition: item.condition,
+            available_to_share: false,
+          }, { onConflict: 'user_id,component_id' });
+        } catch {
+          // ignore
+        }
+      }
+    }
   }
 
   const condColor = (c: Condition) => CONDITIONS.find(x => x.value === c)?.color ?? 'var(--text-muted)';
@@ -137,20 +281,57 @@ export default function Inventory() {
               {items.length} component{items.length !== 1 ? 's' : ''} logged
             </p>
           </div>
-          <button
-            id="add-component-btn"
-            onClick={() => setShowAddForm(v => !v)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '10px 18px', borderRadius: 'var(--radius-md)',
-              background: 'var(--color-green-500)', color: 'white',
-              border: 'none', fontWeight: 600, fontSize: 14, cursor: 'pointer',
-              minHeight: 44,
-            }}
-          >
-            <Plus size={16} />
-            {t('inventory.add')}
-          </button>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+            {items.length === 0 && (
+              <button
+                type="button"
+                onClick={loadDemoItems}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '10px 14px', borderRadius: 'var(--radius-md)',
+                  background: 'var(--surface-tint)', color: 'var(--color-green-600)',
+                  border: '1px solid var(--surface-border)', fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                  minHeight: 44,
+                }}
+              >
+                <Sparkles size={16} />
+                Load Starter Kit
+              </button>
+            )}
+
+            {/* Smart Input (Voice / Photo / Text) */}
+            <button
+              type="button"
+              id="smart-input-btn"
+              onClick={() => setShowSmartInput(true)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '10px 16px', borderRadius: 'var(--radius-md)',
+                background: 'var(--surface-card)', color: 'var(--color-green-600)',
+                border: '1px solid var(--color-green-300)', fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                minHeight: 44,
+              }}
+            >
+              <Mic size={16} />
+              <Camera size={16} />
+              Smart Input
+            </button>
+
+            <button
+              id="add-component-btn"
+              onClick={() => setShowAddForm(v => !v)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '10px 18px', borderRadius: 'var(--radius-md)',
+                background: 'var(--color-green-500)', color: 'white',
+                border: 'none', fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                minHeight: 44,
+              }}
+            >
+              <Plus size={16} />
+              {t('inventory.add')}
+            </button>
+          </div>
         </div>
 
         {/* Error */}
@@ -184,7 +365,7 @@ export default function Inventory() {
                   type="text"
                   value={newComp}
                   onChange={e => setNewComp(e.target.value)}
-                  placeholder="Search components…"
+                  placeholder="Search components (e.g. Arduino, DC Motor, Servo, Sensor)…"
                   style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--surface-border)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                   autoComplete="off"
                   aria-label="Search and select a component"
@@ -192,7 +373,10 @@ export default function Inventory() {
                 {autocomplete.length > 0 && (
                   <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--surface-card)', border: '1px solid var(--surface-border)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-lg)', zIndex: 50, overflow: 'hidden' }}>
                     {autocomplete.map(c => (
-                      <button key={c.id} onClick={() => { setNewComp(c.name); setAutocomplete([]); }}
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => { setNewComp(c.name); setAutocomplete([]); }}
                         style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 14px', border: 'none', background: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}
                         onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-tint)')}
                         onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -208,15 +392,24 @@ export default function Inventory() {
               {/* Quantity */}
               <div>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Quantity</label>
-                <input type="number" min={1} max={99} value={newQty} onChange={e => setNewQty(Math.max(1, parseInt(e.target.value) || 1))}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--surface-border)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                <input
+                  type="number"
+                  min={1}
+                  max={99}
+                  value={newQty}
+                  onChange={e => setNewQty(Math.max(1, parseInt(e.target.value) || 1))}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--surface-border)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                />
               </div>
 
               {/* Condition */}
               <div>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Condition</label>
-                <select value={newCond} onChange={e => setNewCond(e.target.value as Condition)}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--surface-border)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}>
+                <select
+                  value={newCond}
+                  onChange={e => setNewCond(e.target.value as Condition)}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--surface-border)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                >
                   {CONDITIONS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                 </select>
               </div>
@@ -224,19 +417,30 @@ export default function Inventory() {
 
             {/* Share toggle */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 16 }}>
-              <button onClick={() => setNewShare(v => !v)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: newShare ? 'var(--color-green-500)' : 'var(--text-muted)' }}>
+              <button
+                type="button"
+                onClick={() => setNewShare(v => !v)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: newShare ? 'var(--color-green-500)' : 'var(--text-muted)' }}
+              >
                 {newShare ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
               </button>
               <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Available to share with community</span>
             </div>
 
             <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
-              <button onClick={addItem} disabled={saving}
-                style={{ padding: '10px 20px', borderRadius: 'var(--radius-md)', background: 'var(--color-green-500)', color: 'white', border: 'none', fontWeight: 600, fontSize: 14, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1, minHeight: 44 }}>
+              <button
+                type="button"
+                onClick={addItem}
+                disabled={saving}
+                style={{ padding: '10px 20px', borderRadius: 'var(--radius-md)', background: 'var(--color-green-500)', color: 'white', border: 'none', fontWeight: 600, fontSize: 14, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1, minHeight: 44 }}
+              >
                 {saving ? 'Saving…' : 'Add to inventory'}
               </button>
-              <button onClick={() => { setShowAddForm(false); setError(null); }}
-                style={{ padding: '10px 16px', borderRadius: 'var(--radius-md)', background: 'none', border: '1px solid var(--surface-border)', color: 'var(--text-secondary)', fontWeight: 500, fontSize: 14, cursor: 'pointer', minHeight: 44 }}>
+              <button
+                type="button"
+                onClick={() => { setShowAddForm(false); setError(null); }}
+                style={{ padding: '10px 16px', borderRadius: 'var(--radius-md)', background: 'none', border: '1px solid var(--surface-border)', color: 'var(--text-secondary)', fontWeight: 500, fontSize: 14, cursor: 'pointer', minHeight: 44 }}
+              >
                 Cancel
               </button>
             </div>
@@ -246,38 +450,53 @@ export default function Inventory() {
         {/* Inventory list */}
         {loading ? (
           <div style={{ display: 'grid', gap: 12 }}>
-            {[1,2,3].map(i => <div key={i} className="skeleton" style={{ height: 72, borderRadius: 'var(--radius-lg)' }} />)}
+            {[1, 2, 3].map(i => <div key={i} className="skeleton" style={{ height: 72, borderRadius: 'var(--radius-lg)' }} />)}
           </div>
         ) : items.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '80px 24px' }}>
+          <div style={{ textAlign: 'center', padding: '80px 24px', background: 'var(--surface-card)', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--surface-border)' }}>
             <Package size={48} color="var(--text-muted)" style={{ margin: '0 auto 16px' }} />
             <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 18, color: 'var(--text-secondary)', marginBottom: 8 }}>
               {t('inventory.empty')}
             </h3>
-            <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 24 }}>
-              Click "Add component" to log your first electronics part.
+            <p style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 24, maxWidth: 440, margin: '0 auto 24px' }}>
+              Click "Add component" to log your salvaged or owned parts, or load a starter kit to immediately test project matching.
             </p>
-            <button onClick={() => setShowAddForm(true)}
-              style={{ padding: '10px 20px', borderRadius: 'var(--radius-md)', background: 'var(--color-green-500)', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', minHeight: 44 }}>
-              <Plus size={16} style={{ marginRight: 6 }} />
-              Add component
-            </button>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => setShowAddForm(true)}
+                style={{ padding: '10px 20px', borderRadius: 'var(--radius-md)', background: 'var(--color-green-500)', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', minHeight: 44, display: 'flex', alignItems: 'center', gap: 8 }}
+              >
+                <Plus size={16} />
+                Add component
+              </button>
+              <button
+                type="button"
+                onClick={loadDemoItems}
+                style={{ padding: '10px 20px', borderRadius: 'var(--radius-md)', background: 'var(--surface-tint)', color: 'var(--color-green-600)', border: '1px solid var(--surface-border)', fontWeight: 600, cursor: 'pointer', minHeight: 44, display: 'flex', alignItems: 'center', gap: 8 }}
+              >
+                <Sparkles size={16} />
+                Load Starter Kit
+              </button>
+            </div>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {items.map(item => (
-              <div key={item.id} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '16px 20px',
-                background: 'var(--surface-card)',
-                border: '1px solid var(--surface-border)',
-                borderRadius: 'var(--radius-lg)',
-                gap: 12,
-                flexWrap: 'wrap',
-                transition: 'box-shadow 0.2s',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.boxShadow = 'var(--shadow-md)')}
-              onMouseLeave={e => (e.currentTarget.style.boxShadow = '')}
+              <div
+                key={item.id}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '16px 20px',
+                  background: 'var(--surface-card)',
+                  border: '1px solid var(--surface-border)',
+                  borderRadius: 'var(--radius-lg)',
+                  gap: 12,
+                  flexWrap: 'wrap',
+                  transition: 'box-shadow 0.2s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.boxShadow = 'var(--shadow-md)')}
+                onMouseLeave={e => (e.currentTarget.style.boxShadow = '')}
               >
                 <div style={{ flex: 1 }}>
                   <span style={{ fontWeight: 600, fontSize: 15, color: 'var(--text-primary)' }}>{item.componentName}</span>
@@ -298,11 +517,18 @@ export default function Inventory() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <button onClick={() => toggleShare(item)} title={item.available_to_share ? 'Stop sharing' : 'Share with community'}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: item.available_to_share ? 'var(--color-teal-500)' : 'var(--text-muted)', borderRadius: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => toggleShare(item)}
+                    title={item.available_to_share ? 'Stop sharing' : 'Share with community'}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: item.available_to_share ? 'var(--color-teal-500)' : 'var(--text-muted)', borderRadius: 8 }}
+                  >
                     {item.available_to_share ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
                   </button>
-                  <button onClick={() => deleteItem(item.id)} title="Remove from inventory"
+                  <button
+                    type="button"
+                    onClick={() => deleteItem(item)}
+                    title="Remove from inventory"
                     style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: 'var(--text-muted)', borderRadius: 8 }}
                     onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-red-500)')}
                     onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
@@ -315,6 +541,13 @@ export default function Inventory() {
             ))}
           </div>
         )}
+
+        {/* Smart Input Voice/Photo/Text Modal */}
+        <SmartInputModal
+          isOpen={showSmartInput}
+          onClose={() => setShowSmartInput(false)}
+          onAddComponents={handleSmartAdd}
+        />
       </div>
     </div>
   );

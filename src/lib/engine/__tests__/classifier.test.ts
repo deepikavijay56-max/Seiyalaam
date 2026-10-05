@@ -5,7 +5,6 @@ import {
   isSafeListing,
   SAFETY_KEYS,
   type DeviceClass,
-  type ChecklistAnswers,
 } from '../classifier';
 
 // ─── Tests ────────────────────────────────────────────────────────────────────

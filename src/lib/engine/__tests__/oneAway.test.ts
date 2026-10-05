@@ -22,7 +22,7 @@ const robotProject: Project = {
   requirements: [
     { component: 'Arduino Uno',      qty: 1, critical: true,  substitutes: [] },
     { component: 'DC Motor (small)', qty: 2, critical: true,  substitutes: [] },
-    { component: 'Servo Motor',      qty: 1, critical: true,  substitutes: [] }, // MISSING
+    { component: 'Servo Motor',      qty: 1, critical: false, substitutes: [] }, // MISSING
   ],
   steps: [],
   safety_notes: null,

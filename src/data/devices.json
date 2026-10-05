@@ -1,0 +1,245 @@
+[
+  {
+    "id": "dev-1",
+    "name": "Old Smartphone",
+    "difficulty": "medium",
+    "warnings": [
+      "Lithium battery – check for swelling",
+      "Do not short battery terminals"
+    ],
+    "parts": [
+      { "name": "Phone Battery", "qty": 1 },
+      { "name": "Speaker (small)", "qty": 1 },
+      { "name": "OLED Display", "qty": 1 },
+      { "name": "Buzzer", "qty": 1 }
+    ],
+    "checklist": [
+      { "id": "powers_on", "question": "Does it power on?", "safety": false },
+      { "id": "main_function", "question": "Does the main function (screen/apps) work?", "safety": false },
+      { "id": "physical_damage", "question": "Is there visible physical damage or cracked glass?", "safety": false },
+      { "id": "swollen_battery", "question": "Is the battery swollen, bulging, or leaking?", "safety": true },
+      { "id": "burn_marks", "question": "Are there burn marks, scorched smells, or water damage?", "safety": true },
+      { "id": "mains_caps", "question": "Does it contain exposed mains capacitors?", "safety": true }
+    ]
+  },
+  {
+    "id": "dev-2",
+    "name": "Old Laptop",
+    "difficulty": "hard",
+    "warnings": [
+      "Mains adapter – unplug before opening",
+      "Lithium battery – check for swelling"
+    ],
+    "parts": [
+      { "name": "18650 Li-ion Battery", "qty": 3 },
+      { "name": "Speaker (small)", "qty": 2 },
+      { "name": "LCD Display (16x2)", "qty": 1 }
+    ],
+    "checklist": [
+      { "id": "powers_on", "question": "Does it power on?", "safety": false },
+      { "id": "main_function", "question": "Does the OS boot normally?", "safety": false },
+      { "id": "physical_damage", "question": "Is there visible cracking or hinge damage?", "safety": false },
+      { "id": "swollen_battery", "question": "Is the battery swollen, punctured, or leaking?", "safety": true },
+      { "id": "burn_marks", "question": "Are there burn marks or signs of liquid spill?", "safety": true },
+      { "id": "mains_caps", "question": "Does it contain internal mains capacitors?", "safety": true }
+    ]
+  },
+  {
+    "id": "dev-3",
+    "name": "Printer",
+    "difficulty": "medium",
+    "warnings": [
+      "Mains-powered – unplug power cord before opening"
+    ],
+    "parts": [
+      { "name": "Stepper Motor", "qty": 2 },
+      { "name": "DC Motor (small)", "qty": 1 },
+      { "name": "IR Sensor", "qty": 2 }
+    ],
+    "checklist": [
+      { "id": "powers_on", "question": "Does it power on?", "safety": false },
+      { "id": "main_function", "question": "Does it print or feed paper?", "safety": false },
+      { "id": "physical_damage", "question": "Is there visible physical damage?", "safety": false },
+      { "id": "swollen_battery", "question": "Is there any leaking battery pack?", "safety": true },
+      { "id": "burn_marks", "question": "Are there burn marks on the power supply board?", "safety": true },
+      { "id": "mains_caps", "question": "Does it contain high-voltage mains capacitors?", "safety": true }
+    ]
+  },
+  {
+    "id": "dev-4",
+    "name": "Remote Control",
+    "difficulty": "easy",
+    "warnings": [],
+    "parts": [
+      { "name": "IR Sensor", "qty": 1 },
+      { "name": "Buzzer", "qty": 1 }
+    ],
+    "checklist": [
+      { "id": "powers_on", "question": "Does it power on with fresh batteries?", "safety": false },
+      { "id": "main_function", "question": "Does it emit IR signal when buttons are pressed?", "safety": false },
+      { "id": "physical_damage", "question": "Is the plastic shell cracked?", "safety": false },
+      { "id": "swollen_battery", "question": "Is the battery corroded or leaking acid?", "safety": true },
+      { "id": "burn_marks", "question": "Are there burn marks on the PCB?", "safety": true },
+      { "id": "mains_caps", "question": "Does it contain mains capacitors?", "safety": true }
+    ]
+  },
+  {
+    "id": "dev-5",
+    "name": "Toy Car",
+    "difficulty": "easy",
+    "warnings": [],
+    "parts": [
+      { "name": "DC Motor (small)", "qty": 2 },
+      { "name": "IR Sensor", "qty": 1 }
+    ],
+    "checklist": [
+      { "id": "powers_on", "question": "Does it power on?", "safety": false },
+      { "id": "main_function", "question": "Do the drive motors spin?", "safety": false },
+      { "id": "physical_damage", "question": "Is the axle or chassis broken?", "safety": false },
+      { "id": "swollen_battery", "question": "Are the batteries leaking or swollen?", "safety": true },
+      { "id": "burn_marks", "question": "Are there burn marks on the controller?", "safety": true },
+      { "id": "mains_caps", "question": "Does it contain mains capacitors?", "safety": true }
+    ]
+  },
+  {
+    "id": "dev-6",
+    "name": "Electric Fan",
+    "difficulty": "medium",
+    "warnings": [
+      "Mains-powered – unplug before opening",
+      "Large capacitor – discharge before touching"
+    ],
+    "parts": [
+      { "name": "DC Motor (large)", "qty": 1 },
+      { "name": "Relay Module", "qty": 1 }
+    ],
+    "checklist": [
+      { "id": "powers_on", "question": "Does it power on?", "safety": false },
+      { "id": "main_function", "question": "Does the fan spin smoothly?", "safety": false },
+      { "id": "physical_damage", "question": "Is the casing or blade cracked?", "safety": false },
+      { "id": "swollen_battery", "question": "Is any internal battery swollen?", "safety": true },
+      { "id": "burn_marks", "question": "Is there a burning smell or blackened wiring?", "safety": true },
+      { "id": "mains_caps", "question": "Does it contain charged high-voltage capacitors?", "safety": true }
+    ]
+  },
+  {
+    "id": "dev-7",
+    "name": "Wireless Router",
+    "difficulty": "hard",
+    "warnings": [
+      "Mains-powered adapter"
+    ],
+    "parts": [
+      { "name": "HC-05 Bluetooth", "qty": 1 },
+      { "name": "NRF24L01 Module", "qty": 1 }
+    ],
+    "checklist": [
+      { "id": "powers_on", "question": "Do power LEDs light up?", "safety": false },
+      { "id": "main_function", "question": "Does it broadcast Wi-Fi / respond on LAN?", "safety": false },
+      { "id": "physical_damage", "question": "Is there physical enclosure damage?", "safety": false },
+      { "id": "swollen_battery", "question": "Is any battery swollen?", "safety": true },
+      { "id": "burn_marks", "question": "Are there heat scorches or burnt components?", "safety": true },
+      { "id": "mains_caps", "question": "Does it contain internal mains capacitors?", "safety": true }
+    ]
+  },
+  {
+    "id": "dev-8",
+    "name": "Alarm Clock",
+    "difficulty": "easy",
+    "warnings": [],
+    "parts": [
+      { "name": "Buzzer", "qty": 1 },
+      { "name": "LCD Display (16x2)", "qty": 1 }
+    ],
+    "checklist": [
+      { "id": "powers_on", "question": "Does the display turn on?", "safety": false },
+      { "id": "main_function", "question": "Does the buzzer or alarm sound?", "safety": false },
+      { "id": "physical_damage", "question": "Is there visible shell damage?", "safety": false },
+      { "id": "swollen_battery", "question": "Are backup batteries swollen or leaking?", "safety": true },
+      { "id": "burn_marks", "question": "Are there burn marks on the board?", "safety": true },
+      { "id": "mains_caps", "question": "Does it connect directly to mains 230V?", "safety": true }
+    ]
+  },
+  {
+    "id": "dev-9",
+    "name": "RC Drone",
+    "difficulty": "hard",
+    "warnings": [
+      "Lithium battery – check for swelling",
+      "Spinning blades – handle with care"
+    ],
+    "parts": [
+      { "name": "DC Motor (small)", "qty": 4 },
+      { "name": "LiPo Battery", "qty": 1 },
+      { "name": "NRF24L01 Module", "qty": 1 }
+    ],
+    "checklist": [
+      { "id": "powers_on", "question": "Does the flight controller power on?", "safety": false },
+      { "id": "main_function", "question": "Do all motors spin up upon throttle?", "safety": false },
+      { "id": "physical_damage", "question": "Are the frame arms or propellers broken?", "safety": false },
+      { "id": "swollen_battery", "question": "Is the LiPo battery puffy, soft, or dented?", "safety": true },
+      { "id": "burn_marks", "question": "Are there ESC burn marks or melted solder?", "safety": true },
+      { "id": "mains_caps", "question": "Does it contain mains capacitors?", "safety": true }
+    ]
+  },
+  {
+    "id": "dev-10",
+    "name": "Baby Monitor",
+    "difficulty": "medium",
+    "warnings": [
+      "Mains-powered adapter"
+    ],
+    "parts": [
+      { "name": "Speaker (small)", "qty": 1 },
+      { "name": "PIR Sensor", "qty": 1 },
+      { "name": "HC-05 Bluetooth", "qty": 1 }
+    ],
+    "checklist": [
+      { "id": "powers_on", "question": "Does it power on?", "safety": false },
+      { "id": "main_function", "question": "Does audio/video transmission work?", "safety": false },
+      { "id": "physical_damage", "question": "Is there visible physical damage?", "safety": false },
+      { "id": "swollen_battery", "question": "Is the battery pack swollen?", "safety": true },
+      { "id": "burn_marks", "question": "Are there burn marks on the board?", "safety": true },
+      { "id": "mains_caps", "question": "Does it contain mains capacitors?", "safety": true }
+    ]
+  },
+  {
+    "id": "dev-11",
+    "name": "Digital Camera",
+    "difficulty": "medium",
+    "warnings": [
+      "Lithium battery – check for swelling",
+      "Flash capacitor holds high voltage!"
+    ],
+    "parts": [
+      { "name": "Phone Battery", "qty": 1 },
+      { "name": "OLED Display", "qty": 1 }
+    ],
+    "checklist": [
+      { "id": "powers_on", "question": "Does it turn on and extend lens?", "safety": false },
+      { "id": "main_function", "question": "Can it take and store photos?", "safety": false },
+      { "id": "physical_damage", "question": "Is the lens jammed or body cracked?", "safety": false },
+      { "id": "swollen_battery", "question": "Is the battery swollen in its compartment?", "safety": true },
+      { "id": "burn_marks", "question": "Are there burn marks or salt corrosion?", "safety": true },
+      { "id": "mains_caps", "question": "Does it contain an uncapped 330V xenon flash capacitor?", "safety": true }
+    ]
+  },
+  {
+    "id": "dev-12",
+    "name": "Microwave Oven",
+    "difficulty": "hard",
+    "warnings": [
+      "High voltage capacitor holds lethal charge (2000V+)!",
+      "Do NOT open without professional certification"
+    ],
+    "parts": [],
+    "checklist": [
+      { "id": "powers_on", "question": "Does the front panel light up?", "safety": false },
+      { "id": "main_function", "question": "Does it heat food evenly?", "safety": false },
+      { "id": "physical_damage", "question": "Is the door seal or glass damaged?", "safety": false },
+      { "id": "swollen_battery", "question": "Does it show leaking chemicals?", "safety": true },
+      { "id": "burn_marks", "question": "Are there sparks, arc marks, or burnt smells?", "safety": true },
+      { "id": "mains_caps", "question": "Contains lethal 2,000V+ high voltage capacitor!", "safety": true }
+    ]
+  }
+]

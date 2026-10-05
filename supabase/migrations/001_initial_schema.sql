@@ -496,7 +496,7 @@ insert into devices (name, difficulty, warnings, parts, checklist) values
 ),
 (
   'Remote Control', 'easy',
-  ARRAY[],
+  ARRAY[]::text[],
   '[
     {"name":"IR Sensor","qty":1},
     {"name":"Buzzer","qty":1}
@@ -512,7 +512,7 @@ insert into devices (name, difficulty, warnings, parts, checklist) values
 ),
 (
   'Toy Car', 'easy',
-  ARRAY[],
+  ARRAY[]::text[],
   '[
     {"name":"DC Motor (small)","qty":2},
     {"name":"IR Sensor","qty":1}

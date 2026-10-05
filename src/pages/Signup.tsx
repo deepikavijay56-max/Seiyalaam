@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import type { FormEvent, ChangeEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Leaf, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -35,7 +36,7 @@ export default function Signup() {
     return Object.keys(errs).length === 0;
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!validate()) return;
     await signUp(form.email, form.password, form.displayName);
@@ -44,7 +45,7 @@ export default function Signup() {
 
   const field = (name: keyof typeof form) => ({
     value: form[name],
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange: (e: ChangeEvent<HTMLInputElement>) => {
       setForm(f => ({ ...f, [name]: e.target.value }));
       clearError();
     },

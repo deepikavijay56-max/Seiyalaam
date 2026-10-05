@@ -189,6 +189,26 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ─────────────────────────────────────────────
+   Brand Logo
+   ───────────────────────────────────────────── */
+.navbar-brand-logo {
+  height: 40px;
+  width: auto;
+  max-width: 44px;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+.navbar-brand-logo:hover {
+  transform: scale(1.05);
+}
+@media (max-width: 640px) {
+  .navbar-brand-logo {
+    height: 34px;
+    max-width: 38px;
+  }
+}
+
+/* ─────────────────────────────────────────────
    Responsive Bento & Grid Utilities
    ───────────────────────────────────────────── */
 .bento-grid {

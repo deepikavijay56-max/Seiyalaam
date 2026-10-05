@@ -37,20 +37,24 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
         }}
       >
         <div style={{ textAlign: 'center' }}>
-          <div
+          <img
+            src="/logo.png"
+            alt="Seiyalaam"
             style={{
-              width: 48,
-              height: 48,
-              borderRadius: '50%',
-              border: '3px solid var(--color-green-500)',
-              borderTopColor: 'transparent',
-              animation: 'spin 0.8s linear infinite',
+              height: 52,
+              width: 'auto',
+              maxWidth: 56,
+              objectFit: 'contain',
               margin: '0 auto 16px',
+              display: 'block',
+              animation: 'pulse 1.8s ease-in-out infinite',
             }}
           />
-          <p style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-body)' }}>Loading…</p>
+          <p style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500 }}>
+            Loading Seiyalaam…
+          </p>
         </div>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        <style>{`@keyframes pulse { 0%, 100% { opacity: 0.6; transform: scale(0.96); } 50% { opacity: 1; transform: scale(1.04); } }`}</style>
       </div>
     );
   }

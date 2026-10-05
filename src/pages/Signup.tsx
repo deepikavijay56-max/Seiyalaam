@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, Leaf, AlertCircle, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useLanguage } from '../hooks/useLanguage';
 
@@ -83,14 +83,25 @@ export default function Signup() {
   return (
     <div style={{ minHeight: 'calc(100vh - 64px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 16px', background: 'var(--surface-bg)' }}>
       <div style={{ width: '100%', maxWidth: 400, background: 'var(--surface-card)', border: '1px solid var(--surface-border)', borderRadius: 'var(--radius-lg)', padding: '40px 32px', boxShadow: 'var(--shadow-lg)' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 32 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, var(--color-green-500), var(--color-teal-500))', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-            <Leaf size={24} color="white" />
-          </div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, margin: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 28, textAlign: 'center' }}>
+          <img
+            src="/logo.png"
+            alt="Seiyalaam"
+            style={{
+              height: 64,
+              width: 'auto',
+              maxWidth: 72,
+              objectFit: 'contain',
+              marginBottom: 14,
+              display: 'block',
+            }}
+          />
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
             {t('auth.signup')}
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: '4px 0 0' }}>Join Seiyalaam for free</p>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: '6px 0 0', lineHeight: 1.5 }}>
+            Join Seiyalaam to turn e-waste into living innovations
+          </p>
         </div>
 
         {error && (

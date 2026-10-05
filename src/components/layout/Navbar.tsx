@@ -3,7 +3,6 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import {
   Menu,
   X,
-  Leaf,
   User,
   LogOut,
   LayoutDashboard,
@@ -79,22 +78,18 @@ export default function Navbar() {
               flexShrink: 0,
             }}
           >
-            <div
+            <img
+              src="/logo.png"
+              alt="Seiyalaam"
+              className="navbar-brand-logo"
               style={{
-                width: 36,
-                height: 36,
-                borderRadius: 10,
-                background: 'linear-gradient(135deg, #10B981, #06B6D4)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
-                position: 'relative',
+                height: 40,
+                width: 'auto',
+                objectFit: 'contain',
                 flexShrink: 0,
+                display: 'block',
               }}
-            >
-              <Leaf size={20} color="white" />
-            </div>
+            />
 
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <span

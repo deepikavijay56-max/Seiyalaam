@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, Leaf, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useLanguage } from '../hooks/useLanguage';
 
@@ -65,20 +65,24 @@ export default function Login() {
         boxShadow: 'var(--shadow-lg)',
       }}>
         {/* Logo */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 32 }}>
-          <div style={{
-            width: 48, height: 48, borderRadius: 12,
-            background: 'linear-gradient(135deg, var(--color-green-500), var(--color-teal-500))',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            marginBottom: 12,
-          }}>
-            <Leaf size={24} color="white" />
-          </div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
-            {t('auth.login')}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 28, textAlign: 'center' }}>
+          <img
+            src="/logo.png"
+            alt="Seiyalaam"
+            style={{
+              height: 64,
+              width: 'auto',
+              maxWidth: 72,
+              objectFit: 'contain',
+              marginBottom: 14,
+              display: 'block',
+            }}
+          />
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+            Welcome back
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: '4px 0 0' }}>
-            Welcome back to Seiyalaam
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: '6px 0 0', lineHeight: 1.5, maxWidth: 320 }}>
+            Sign in to continue giving your electronics a second life.
           </p>
         </div>
 

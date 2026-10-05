@@ -695,20 +695,19 @@ export default function Landing() {
               gap: 20,
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <img
+                src="/logo.png"
+                alt="Seiyalaam"
                 style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 8,
-                  background: 'linear-gradient(135deg, #10B981, #06B6D4)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  height: 36,
+                  width: 'auto',
+                  maxWidth: 40,
+                  objectFit: 'contain',
+                  display: 'block',
+                  flexShrink: 0,
                 }}
-              >
-                <Leaf size={18} color="white" />
-              </div>
+              />
               <div>
                 <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 16, color: 'var(--text-primary)' }}>
                   Seiyalaam

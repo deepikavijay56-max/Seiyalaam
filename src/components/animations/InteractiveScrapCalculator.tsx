@@ -116,7 +116,7 @@ export default function InteractiveScrapCalculator() {
           }}
         >
           <Sparkles size={13} />
-          INSTANT HACKATHON DEMO PLAYGROUND
+          INTERACTIVE HARDWARE PLAYGROUND
         </div>
 
         <h3

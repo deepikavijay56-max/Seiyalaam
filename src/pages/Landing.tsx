@@ -45,7 +45,7 @@ export default function Landing() {
 
         <div className="page-container" style={{ position: 'relative', zIndex: 1, width: '100%' }}>
           <div style={{ maxWidth: 880, margin: '0 auto', textAlign: 'center' }}>
-            {/* Hackathon Header Badge */}
+            {/* Header Badge */}
             <div
               style={{
                 display: 'inline-flex',
@@ -70,7 +70,7 @@ export default function Landing() {
                   color: 'var(--color-green-800)',
                 }}
               >
-                HACKATHON INNOVATION · E-WASTE REBIRTH ENGINE
+                E-WASTE REBIRTH ENGINE
               </span>
             </div>
 

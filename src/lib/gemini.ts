@@ -19,7 +19,7 @@ export interface GeminiAnalysisResult {
 
 export function isGeminiConfigured(): boolean {
   // Enabled through secure server-side edge function proxy
-  return Boolean(import.meta.env.VITE_SUPABASE_URL);
+  return Boolean(import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL);
 }
 
 /**
